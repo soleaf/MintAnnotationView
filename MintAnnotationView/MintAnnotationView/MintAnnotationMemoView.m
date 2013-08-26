@@ -35,25 +35,25 @@
     
     for (NSDictionary *item in self.annotationList) {
         
-        // 1) 사각형찾기
+        // 1) Find rect
         NSInteger beginOnItem = [[item objectForKey:@"start"] integerValue];
         NSInteger tagLength = [[item objectForKey:@"end"] integerValue]-beginOnItem +1;
         UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:beginOnItem];
         UITextPosition *end = [textView positionFromPosition:begin offset:tagLength];
         UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
         
-        // 2) 사각형그리기
+        // 2) Draw rect
         [self drawRectangle:context Rect:[textView firstRectForRange:textRange]];
         
-        // 3) 두줄인지
+        // 3) Need it 2lines ?
         CGPoint firstLineBeginPosition = [textView caretRectForPosition:begin].origin;
         CGPoint secondLineEndPosition = [textView caretRectForPosition:end].origin;
         
         if (firstLineBeginPosition.y < secondLineEndPosition.y){
             
-            // 두번째줄의 첫번째 위치를 찾아냄
+            // Find char pos of 2nd line
             float secondY = firstLineBeginPosition.y;
-            CFRange secondStrRange = CFRangeMake(beginOnItem, 1); // 첫번째줄 첫글자부터 이동해서 찾아감
+            CFRange secondStrRange = CFRangeMake(beginOnItem, 1);
             NSInteger secondPos = beginOnItem;
             NSInteger cnt = 0;
             
@@ -69,25 +69,24 @@
                 
             }
             
-            // 사각형 계산
+            // Calculate a rect
             UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
             UITextPosition *secondEnd = [textView positionFromPosition:secondBegin offset:secondStrRange.length];
             UITextRange *secondTextRange = [textView textRangeFromPosition:secondBegin toPosition:secondEnd];
             
-            // 다시그리기
+            // Redraw
             [self drawRectangle:context Rect:[textView firstRectForRange:secondTextRange]];
         }
         
         
     }
 
-} // 언급목록에 포함된 이름인지 확인하는 if문 끝
+} // End of if statement for checking name is included in annotation list
 
 
 
 - (void) drawRectangle: (CGContextRef) context Rect:(CGRect) rect
 {
-    //    CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor)
     rect.size.width+=2;
     rect.size.height-=2;
     rect.origin.x-=1;
@@ -101,20 +100,19 @@
     CGContextSetFillColorWithColor(context, _nameTagColor.CGColor);
     CGContextSetStrokeColorWithColor(context, _nameTagLineColor.CGColor);
     
-    // 사각형 선그리기
+    // Draw line
     CGContextAddRect(context, rect);
     CGContextStrokePath(context);
     
-    // 사각형 채우기
+    // Fill
     CGContextFillRect(context, rect);
     CGContextStrokeRectWithWidth(context, rect, 0.5);
 }
 
 - (NSString *)annotationWithMemo:(NSString *)memo
 {
-    // 코멘트 내용 넣고, 파싱해서 언급텍스트를 하이라이팅
 
-    // 1. plain text, announced name분리
+    // 1. Separate plain text, annotation name
     NSMutableArray *announcedNames = [[NSMutableArray alloc] init];
     BOOL isEndOfMemo = NO;
     NSString *parsingMemo = memo;
@@ -134,14 +132,14 @@
         // 2) cut start tag
         NSRange rangeOfTagStartClose = [parsingMemo rangeOfString:@">"];
         
-        // 내용 <u id=1111>ㅇㅇ</u>내용 일때
-        // 태그부분 컷팅
+        // conetns =  ...<u uid=1111>name</u>...
+        // Cut tags
         if (rangeOfTagStart.location > 0) {
             parsingMemo = [NSString stringWithFormat:@"%@%@",
                            [parsingMemo substringToIndex:rangeOfTagStart.location],
                            [parsingMemo substringFromIndex:rangeOfTagStartClose.location+1]];
         }
-        // <u id=1111>ㅇㅇ</u>내용 일때
+        // contents = <u uid=1111>name</u>...
         else{
             parsingMemo = [NSString stringWithFormat:@"%@",
                            [parsingMemo substringFromIndex:rangeOfTagStartClose.location+1]];
@@ -151,8 +149,7 @@
         // 3)end tag
         NSRange rangeOfTagEnd = [parsingMemo rangeOfString:@"</u>"];
         
-        // 4) cut end tag
-        // 태그부분 컷팅
+        // 4) cut end tags
         parsingMemo = [NSString stringWithFormat:@"%@%@%@",
                        preParsedMemo,
                        [parsingMemo substringToIndex:rangeOfTagEnd.location],
@@ -168,13 +165,13 @@
     
     
     
-    // 2. plain text 적용
+    // 2. Set plane text
     self.text = parsingMemo.copy;
     //    CGRect frame = self.ui_comment.frame;
     //    frame.size.height = self.ui_comment.contentSize.height-8;
     //    self.ui_comment.frame = frame;
     
-    // 3. announced name적용
+    // 3. announced name
     self.annotationList = announcedNames;
     [self setNeedsDisplay];
     

@@ -130,7 +130,6 @@
 
 - (void) drawRectangle: (CGContextRef) context Rect:(CGRect) rect
 {
-    //    CGContextSetStrokeColorWithColor(context, [UIColor redColor].CGColor)
     rect.size.width+=1;
     rect.size.height-=2;
     rect.origin.y+=1;
@@ -266,7 +265,6 @@
                 
             }
             
-            
             prefixPos = prefixPos + startPos + endPos;
             finding = [finding substringFromIndex:startPos+endPos]; // More searching keyword
             
@@ -301,13 +299,13 @@
         
         NSInteger endPos = [findingStr rangeOfString:@" "].location;
         
-        if (endPos < 1 || endPos > findingStr.length) return YES; // 편집허용
+        if (endPos < 1 || endPos > findingStr.length) return YES; // Permit edit
         
-        // 사각형 찾기
+        // Find rect
         NSInteger tagRangeBegin = startPos + prefixPos;
         NSInteger tagRangeEnd = tagRangeBegin + endPos;
         
-        // 언급 범위에 변경된 좌표가 포함되어있는지 확인
+        // Is in AnnounceList a rect
         if (tagRangeBegin < editingRange.location && editingRange.location + editingRange.length -1 < tagRangeEnd -1){
             
             NSString *name = [[findingStr substringToIndex:endPos] substringFromIndex:1];
@@ -321,12 +319,11 @@
                 
             }
             
-            // 태그가 수정됨
             return  nameInAnnoncedList ? NO : YES;
         }
         
         prefixPos = prefixPos + startPos + endPos;
-        finding = [finding substringFromIndex:startPos+endPos]; // 더찾을 텍스트
+        finding = [finding substringFromIndex:startPos+endPos]; // More searching keyword
         
     }
     
@@ -335,19 +332,17 @@
 }
 
 
-
 - (NSInteger) findChangedPoint: (NSString*)origin andModified :(NSString*) comparison
 {
-    // 두 텍스트 사이의 차이점이 있는 좌표를 반환(0부터 탐색)
+    // Return Region pos of tow text
     
     NSInteger point = 0;
     
     for (point = 0; point < origin.length; point++) {
         
-        // 비교대상의 길이가 검사포인트보다 작으면: 더이상 검사할게 없음 -> 완료
         if (comparison.length <= point || origin.length <= point) break;
         
-        // 검사포인트에서 차이가 발견 -> 완료
+        // Occur a diff
         if (![[origin substringToIndex:point] isEqualToString:[comparison substringToIndex:point]]) break;
         
     }

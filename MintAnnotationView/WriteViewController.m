@@ -23,6 +23,13 @@
     return self;
 }
 
+- (void)viewDidLoad
+{
+    // Required
+    // MintAnnotationChatView
+    self.annotationView.delegate = self;
+}
+
 - (IBAction)annotateMary:(id)sender {
     
     NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
@@ -51,16 +58,19 @@
     [self.annotationView annotation:info];
 }
 
+
+#pragma mark - UITextViewDelegate (Required)
+
 - (void)textViewDidChange:(UITextView *)textView
 {
-    // 태그가 삭제되는지 확인
+    // Checking User trying to remove MintAnnotationView's annoatation
     [self.annotationView checkTagDeleting];
     
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-    // 태그를 편집하려하는지
+    // Checking User trying to edit MintAnnotationView's annoatation
     return [self.annotationView checkingEditingTag:textView andRange:range];
     
 }

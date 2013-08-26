@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MintAnnotationChatView.h"
 
-@interface WriteViewController : UIViewController
+@interface WriteViewController : UIViewController<UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MintAnnotationChatView *annotationView;
 
