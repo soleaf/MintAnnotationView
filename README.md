@@ -1,4 +1,4 @@
-MintAnnotationVIew
+MintAnnotationView
 ==================
 
 UITextViews with name height like Facebook
