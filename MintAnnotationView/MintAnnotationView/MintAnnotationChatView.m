@@ -5,7 +5,7 @@
 //  Created by soleaf on 13. 8. 26..
 //  Mintcode.org
 //  http://www.mintcode.org/
-//  Repository : https://github.com/soleaf/MintAnnotationVIew
+//  Repository : https://github.com/soleaf/MintAnnotationView
 //
 
 #import <QuartzCore/QuartzCore.h>
@@ -43,31 +43,29 @@
     
     // Drawing code
     CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    // @의 좌표를 알아내야해
+
     UITextView *textView = self;
     
-    // 1. 검색 텍스트 지정
+    // 1. Define search keyword
     NSString *finding = textView.text;
     
-    // 2. 여러번 찾을 때 스타일을 지정할 좌표 = 이전텍스트길이(prefixPos) + 찾은 좌표
+    // 2. Pos = before text pos + new pos
     NSInteger prefixPos = 0;
     
-    // 3. 찾아서 스타일링
+    // 3. Find and draw
     while ([finding rangeOfString:@"@"].location != NSNotFound) {
         
-        // 1) @좌표의 텍스트 확인
+        // 1) Where is '@'
         NSInteger startPos = [finding rangeOfString:@"@"].location;
         
-        // 2) @좌표부터 끝까지 잘라내기
+        // 2) Cut
         NSString *findingStr = [finding substringFromIndex:startPos];
-        
-        // 3) 잘라낸 텍스트에 공백을 찾음
+    
         NSInteger endPos = [findingStr rangeOfString:@" "].location;
         
         if (endPos < 1 || endPos > findingStr.length) return;
         
-        // 3.1) 언급리스트에 있는지 확인
+        // 3) Is in annotation list.
         NSString *name = [[findingStr substringToIndex:endPos] substringFromIndex:1];
         BOOL nameInAnnoncedList = NO;
         for (NSDictionary *item in self.annotationList) {
@@ -79,25 +77,24 @@
         
         if (nameInAnnoncedList){
             
-            // 5) 사각형 찾기
+            // 5) Find rect
             CFRange stringRange = CFRangeMake(startPos +prefixPos, endPos);
             UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:stringRange.location];
             UITextPosition *end = [textView positionFromPosition:begin offset:stringRange.length];
             UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
             
-            // 6) 사각형그리기
+            // 6) Draw rect
             [self drawRectangle:context Rect:[textView firstRectForRange:textRange]];
             
-            // 7) 두줄인지
+            // 7) Need 2line?
             CGPoint firstLineBeginPosition = [textView caretRectForPosition:begin].origin;
             CGPoint secondLineEndPosition = [textView caretRectForPosition:end].origin;
-            NSLog(@"%f -> %f",firstLineBeginPosition.y, secondLineEndPosition.y);
             
             if (firstLineBeginPosition.y < secondLineEndPosition.y){
                 
-                // 두번째줄의 첫번째 위치를 찾아냄
+                // Finf pos of first line
                 float secondY = firstLineBeginPosition.y;
-                CFRange secondStrRange = CFRangeMake(startPos+ prefixPos, 1); // 첫번째줄 첫글자부터 이동해서 찾아감
+                CFRange secondStrRange = CFRangeMake(startPos+ prefixPos, 1);
                 NSInteger secondPos = startPos + prefixPos;
                 NSInteger cnt = 0;
                 
@@ -111,26 +108,22 @@
                     CGPoint secondPosition = [textView caretRectForPosition:secondBegin].origin;
                     secondY = secondPosition.y;
                     
-                    NSLog(@"secondPos: %d secondPosition: %f  ~ endPos :%ld", secondPos, secondY, (long)endPos);
-                    
                 }
                 
-                NSLog(@"두줄");
-                
-                // 사각형 계산
+                // Calculate rect
                 UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
                 UITextPosition *secondEnd = [textView positionFromPosition:secondBegin offset:secondStrRange.length];
                 UITextRange *secondTextRange = [textView textRangeFromPosition:secondBegin toPosition:secondEnd];
                 
-                // 다시그리기
+                // Redraw
                 [self drawRectangle:context Rect:[textView firstRectForRange:secondTextRange]];
                 
             }
             
-        } // 언급목록에 포함된 이름인지 확인하는 if문 끝
+        } // End if of Check is in annotation list.
         
         prefixPos = prefixPos + startPos + endPos;
-        finding = [finding substringFromIndex:startPos+endPos]; // 더찾을 텍스트
+        finding = [finding substringFromIndex:startPos+endPos]; // Keyword more to find
         
     }
 }
@@ -150,11 +143,11 @@
     CGContextSetFillColorWithColor(context, _nameTagColor.CGColor);
     CGContextSetStrokeColorWithColor(context, _nameTagLineColor.CGColor);
     
-    // 사각형 선그리기
+    // Draw line
     CGContextAddRect(context, rect);
     CGContextStrokePath(context);
     
-    // 사각형 채우기
+    // Fill
     CGContextFillRect(context, rect);
     CGContextStrokeRectWithWidth(context, rect, 0.5);
 }
@@ -196,7 +189,6 @@
 - (void) checkTagDeleting
 {
     
-    // 무한루프 방지
     if (isModified){
         isModified = NO;
         return;
@@ -204,62 +196,56 @@
     
     UITextView *textView = self;
     
-    // 0. 삭제중인지 확인
+    // 0. Check deleting
     if (beforeStrForCheckingDeleting.length > textView.text.length){
         
-        // 1. 태그의 일부가 삭제됬는지 확인: 글쎄..... 어케알아... -_-...
+        // 1. Is deleted Char on tag ?
         
-        // 1) 이전꺼와 현재꺼가 다른 좌표를 찾음
+        // 1) Diff
         NSInteger modifiedPos = [self findChangedPoint:beforeStrForCheckingDeleting andModified:textView.text];
-        NSLog(@"바뀐곳: %d", modifiedPos);
         
-        // 2) 태그목록에서 삭제된 좌표가 해당되었는지
+        // 2) Is in AnnotationList Deleted char's?
         
-        // @의 좌표를 알아내야해
+        // Where is pos of '@'
         
-        // (1) 검색 텍스트 지정
+        // (1) Define keyword to find
         NSString *finding = beforeStrForCheckingDeleting;
         
-        // (2) 여러번 찾을 때 스타일을 지정할 좌표 = 이전텍스트길이(prefixPos) + 찾은 좌표
+        // (2) Before Keyword Pos + New Pos
         NSInteger prefixPos = 0;
         
         while ([finding rangeOfString:@"@"].location != NSNotFound) {
             
-            // @좌표의 텍스트 확인
+            // Pos of '@'
             NSInteger startPos = [finding rangeOfString:@"@"].location;
             
-            // @좌표부터 끝까지 잘라내기
+            // Cut
             NSString *findingStr = [finding substringFromIndex:startPos];
-            
-            // 잘라낸 텍스트에 공백을 찾음
+
             NSInteger endPos = [findingStr rangeOfString:@" "].location;
             
             if (endPos < 1 || endPos > findingStr.length) return;
             
-            // 사각형 찾기
+            // Find rect
             NSInteger tagRangeBegin = startPos + prefixPos;
             NSInteger tagRangeEnd = tagRangeBegin + endPos;
             
-            // 언급 범위에 변경된 좌표가 포함되어있는지 확인
-            NSLog(@"tagRangeBegin %d modifiedPos %d tagRangeEnd %d",tagRangeBegin, modifiedPos, tagRangeEnd);
+            // Is in AnnounceList a rect
             if (tagRangeBegin <= modifiedPos && modifiedPos <= tagRangeEnd){
                 
-                // 태그가 삭제됨
-                
-                // 플래그로 무한루프 방지
+                // Disturb Recall (infinite loop)
                 isModified = YES;
                 
-                // 해당 캐그 통채로 증발
+                // Remove all chars of annotation tag
                 if (tagRangeEnd >= textView.text.length) tagRangeEnd = textView.text.length;
                 
-                // 태그 목록에서 제거
+                // Remove it for annotation list
                 NSString *name = [[findingStr substringToIndex:endPos] substringFromIndex:1];
                 BOOL isDeleted = NO;
                 for (NSInteger i = 0; i < self.annotationList.count; i++) {
                     
                     NSDictionary *item = [self.annotationList objectAtIndex:i];
                     if ([[item objectForKey:MintAnnotationInfoName] isEqualToString:name]) {
-                        NSLog(@"태그삭제 :%@", [item objectForKey:MintAnnotationInfoName]);
                         [self.annotationList removeObjectAtIndex:i];
                         isDeleted = YES;
                         break;
@@ -282,7 +268,7 @@
             
             
             prefixPos = prefixPos + startPos + endPos;
-            finding = [finding substringFromIndex:startPos+endPos]; // 더찾을 텍스트
+            finding = [finding substringFromIndex:startPos+endPos]; // More searching keyword
             
         }
         
@@ -295,27 +281,24 @@
 
 - (BOOL) checkingEditingTag:(UITextView*) textView andRange:(NSRange) editingRange
 {
-    // 0. 삭제중인지 확인
+    // 0. Check deleting
     
-    // 1. 태그의 일부가 삭제됬는지 확인: 글쎄..... 어케알아... -_-...
+    // 1. Is deleted Char on tag?
     
-    // @의 좌표를 알아내야해
-    
-    // (1) 검색 텍스트 지정
+    // (1) Define Keyword
     NSString *finding = beforeStrForCheckingDeleting;
     
-    // (2) 여러번 찾을 때 스타일을 지정할 좌표 = 이전텍스트길이(prefixPos) + 찾은 좌표
+    // (2) Before searched pos + new pos
     NSInteger prefixPos = 0;
     
     while ([finding rangeOfString:@"@"].location != NSNotFound) {
         
-        // @좌표의 텍스트 확인
+        // Check pos of '@'
         NSInteger startPos = [finding rangeOfString:@"@"].location;
         
-        // @좌표부터 끝까지 잘라내기
+        // Cut
         NSString *findingStr = [finding substringFromIndex:startPos];
         
-        // 잘라낸 텍스트에 공백을 찾음
         NSInteger endPos = [findingStr rangeOfString:@" "].location;
         
         if (endPos < 1 || endPos > findingStr.length) return YES; // 편집허용
@@ -339,7 +322,6 @@
             }
             
             // 태그가 수정됨
-            NSLog(@"태그수정");
             return  nameInAnnoncedList ? NO : YES;
         }
         

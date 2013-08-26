@@ -35,8 +35,6 @@
     
     for (NSDictionary *item in self.annotationList) {
         
-                NSLog(@"item :%@",item);
-        
         // 1) 사각형찾기
         NSInteger beginOnItem = [[item objectForKey:@"start"] integerValue];
         NSInteger tagLength = [[item objectForKey:@"end"] integerValue]-beginOnItem +1;
@@ -70,8 +68,6 @@
                 secondY = secondPosition.y;
                 
             }
-            
-            NSLog(@"두줄");
             
             // 사각형 계산
             UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
@@ -124,8 +120,6 @@
     NSString *parsingMemo = memo;
     
     while (!isEndOfMemo) {
-        
-        //        NSLog(@"parsingMemo: %@",parsingMemo);
         
         NSString *preParsedMemo = @"";
         
