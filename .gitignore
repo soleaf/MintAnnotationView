@@ -1,4 +1,7 @@
-
-*.xcuserstate
-
 *.DS_Store
+
+xcuserdata/
+
+*. xcuserdata
+
+xcuserdata
