@@ -1,7 +1,7 @@
 MintAnnotationView
 ==================
 
-UITextViews with name height like Facebook
+UITextViews with name highlight tag like Facebook
 
 
 Introduction
