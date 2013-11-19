@@ -12,11 +12,12 @@ Additional, I maked UITextView for reply list that just show tag rects from anno
 
  * Appear tagged user from annotationList(NSArray)
  * Managed annotationList(It able to use write form)
- * Easy comsumize.
-
+ * Easy customize.
 ![MintAnnotationChatView](https://github.com/soleaf/MintAnnotationView/blob/master/sc_chatview.png?raw=true)
+(MintAnnotationChatView)
 
 ![MintAnnotationMemoView](https://github.com/soleaf/MintAnnotationView/blob/master/cs_memoview.png?raw=true)
+(MintAnnotationChatView)
 
 How to use
 ==
