@@ -16,10 +16,12 @@
 
 @interface MintAnnotationMemoView : UITextView
 
-@property UIColor *nameTagColor;
-@property UIColor *nameTagLineColor;
-@property NSMutableArray *annotationList;
+@property UIColor           *nameTagColor;
+@property UIColor           *nameTagLineColor;
+@property NSMutableArray    *annotationList;
+@property UIImage           *nameTagImage;
 
 - (NSString *)annotationWithMemo:(NSString *)memo;
+- (void) removeAnnotations;
 
 @end

@@ -15,6 +15,7 @@
 {
     BOOL isModified;
     NSString *beforeStrForCheckingDeleting;
+    NSMutableArray *tagViews;
 }
 
 @end
@@ -28,7 +29,7 @@
     if (self) {
         // Initialization code
         self.contentMode = UIViewContentModeRedraw;
-        
+        tagViews = [[NSMutableArray alloc] init];
         
     }
     return self;
@@ -39,6 +40,10 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
+    for (UIView *tagView in tagViews) {
+        [tagView removeFromSuperview];
+    }
+    
     if (self.annotationList == nil) return;
     
     // Drawing code
@@ -77,16 +82,13 @@
         
         if (nameInAnnoncedList){
             
-            // 5) Find rect
+            // 4) Find rect
             CFRange stringRange = CFRangeMake(startPos +prefixPos, endPos);
             UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:stringRange.location];
             UITextPosition *end = [textView positionFromPosition:begin offset:stringRange.length];
             UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
             
-            // 6) Draw rect
-            [self drawRectangle:context Rect:[textView firstRectForRange:textRange]];
-            
-            // 7) Need 2line?
+            // 5) Need 2line?
             CGPoint firstLineBeginPosition = [textView caretRectForPosition:begin].origin;
             CGPoint secondLineEndPosition = [textView caretRectForPosition:end].origin;
             
@@ -115,9 +117,17 @@
                 UITextPosition *secondEnd = [textView positionFromPosition:secondBegin offset:secondStrRange.length];
                 UITextRange *secondTextRange = [textView textRangeFromPosition:secondBegin toPosition:secondEnd];
                 
-                // Redraw
-                [self drawRectangle:context Rect:[textView firstRectForRange:secondTextRange]];
+                // 1st line
+                [self drawTag:context Rect:[textView firstRectForRange:textRange]
+                         name:[self textInRange:[textView textRangeFromPosition:textRange.start toPosition:secondBegin]]];
                 
+                // 2nd Line
+                [self drawTag:context Rect:[textView firstRectForRange:secondTextRange]
+                                    name:[self textInRange:secondTextRange]];
+            }
+            else{
+                // Draw rect first line
+                [self drawTag:context Rect:[textView firstRectForRange:textRange] name:[self textInRange:textRange]];
             }
             
         } // End if of Check is in annotation list.
@@ -126,6 +136,14 @@
         finding = [finding substringFromIndex:startPos+endPos]; // Keyword more to find
         
     }
+}
+
+- (void) drawTag: (CGContextRef) context Rect:(CGRect) rect name:(NSString*)nameText
+{
+    if(self.nameTagImage)
+        [self drawTagImageInRect:rect name:nameText];
+    else
+        [self drawRectangle:context Rect:rect];
 }
 
 - (void) drawRectangle: (CGContextRef) context Rect:(CGRect) rect
@@ -151,6 +169,27 @@
     CGContextStrokeRectWithWidth(context, rect, 0.5);
 }
 
+- (void) drawTagImageInRect:(CGRect) rect name:(NSString*)nameText
+{
+    self.nameTagColor = self.nameTagColor;
+    
+    UIImageView *tagImage = [[UIImageView alloc] initWithFrame:rect];
+    tagImage.image = self.nameTagImage;
+    [self addSubview:tagImage];
+    
+    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
+    tagLabel.textColor = _nameTagColor;
+    tagLabel.text = nameText;
+    tagLabel.backgroundColor = [UIColor clearColor];
+    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-2];
+    tagLabel.textAlignment = NSTextAlignmentCenter;
+    tagLabel.minimumScaleFactor = 1.;
+    [self addSubview:tagLabel];
+    
+    [tagViews addObject:tagImage];
+    [tagViews addObject:tagLabel];
+}
+
 - (void)annotation:(NSDictionary *)info
 {
 
@@ -169,10 +208,22 @@
         NSString *tempCommentWriting = self.text;
         
         // display name
-        if (tempCommentWriting == nil)
+        if (tempCommentWriting.length == 0){
             tempCommentWriting = [NSString stringWithFormat:@"@%@ ", [info objectForKey:MintAnnotationInfoName]];
-        else
-            tempCommentWriting = [NSString stringWithFormat:@"%@ @%@ ", tempCommentWriting, [info objectForKey:MintAnnotationInfoName]];
+        }
+        else{
+            
+            NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
+            
+            // This is first word after new line.
+            if ([prevString isEqualToString:@"\n"])
+                tempCommentWriting = [NSString stringWithFormat:@"%@@%@ ",
+                                      tempCommentWriting, [info objectForKey:MintAnnotationInfoName]];
+            else
+                tempCommentWriting = [NSString stringWithFormat:@"%@ @%@ ",
+                                      tempCommentWriting, [info objectForKey:MintAnnotationInfoName]];
+            
+        }
         
         self.text = tempCommentWriting;
     }
@@ -181,6 +232,10 @@
     [self.annotationList addObject:info];
     
     [self setNeedsDisplay];
+    
+    // Pass Delegate
+    if (self.delegate && [self.delegate respondsToSelector:@selector(textViewDidChange:)])
+        [self.delegate textViewDidChange:self];
 
 }
 
@@ -348,5 +403,11 @@
     }
     
     return point;
+}
+
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    return NO;
 }
 @end

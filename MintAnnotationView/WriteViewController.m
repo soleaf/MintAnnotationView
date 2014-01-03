@@ -28,6 +28,10 @@
     // Required
     // MintAnnotationChatView
     self.annotationView.delegate = self;
+    
+    // Some custom apperances
+    self.annotationView.nameTagImage = [[UIImage imageNamed:@"tagImage"] stretchableImageWithLeftCapWidth:4 topCapHeight:4];
+    self.annotationView.nameTagColor = [UIColor colorWithRed:0.00 green:0.54 blue:0.50 alpha:1.0];
 }
 
 - (IBAction)annotateMary:(id)sender {

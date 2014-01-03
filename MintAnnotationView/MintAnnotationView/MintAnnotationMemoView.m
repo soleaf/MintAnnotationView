@@ -41,9 +41,7 @@
         UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:beginOnItem];
         UITextPosition *end = [textView positionFromPosition:begin offset:tagLength];
         UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
-        
-        // 2) Draw rect
-        [self drawRectangle:context Rect:[textView firstRectForRange:textRange]];
+
         
         // 3) Need it 2lines ?
         CGPoint firstLineBeginPosition = [textView caretRectForPosition:begin].origin;
@@ -74,15 +72,32 @@
             UITextPosition *secondEnd = [textView positionFromPosition:secondBegin offset:secondStrRange.length];
             UITextRange *secondTextRange = [textView textRangeFromPosition:secondBegin toPosition:secondEnd];
             
-            // Redraw
-            [self drawRectangle:context Rect:[textView firstRectForRange:secondTextRange]];
+            // 1st line
+            [self drawTag:context Rect:[textView firstRectForRange:textRange]
+                                name:[self textInRange:[textView textRangeFromPosition:textRange.start toPosition:secondBegin]]];
+            
+            // 2nd Line
+            [self drawTag:context Rect:[textView firstRectForRange:secondTextRange]
+                                name:[self textInRange:secondTextRange]];
+        }
+        else{
+            // 2) Draw rect first line
+            [self drawTag:context Rect:[textView firstRectForRange:textRange] name:[self textInRange:textRange]];
         }
         
         
     }
-
+    
 } // End of if statement for checking name is included in annotation list
 
+
+- (void) drawTag: (CGContextRef) context Rect:(CGRect) rect name:(NSString*)nameText
+{
+    if(self.nameTagImage)
+        [self drawTagImageInRect:rect name:nameText];
+    else
+        [self drawRectangle:context Rect:rect];
+}
 
 
 - (void) drawRectangle: (CGContextRef) context Rect:(CGRect) rect
@@ -109,9 +124,37 @@
     CGContextStrokeRectWithWidth(context, rect, 0.5);
 }
 
+- (void) drawTagImageInRect:(CGRect) rect name:(NSString*)nameText
+{
+    
+    if (rect.origin.y ==-1) rect.origin.y= 0;
+    
+    if (_nameTagColor == nil)
+        self.nameTagColor = [UIColor colorWithRed:0.00 green:0.54 blue:0.50 alpha:1.0];
+
+    UIImageView *tagImage = [[UIImageView alloc] initWithFrame:rect];
+    tagImage.image = self.nameTagImage;
+    tagImage.tag = 9;
+    [self addSubview:tagImage];
+
+    CGRect titleRect = rect;
+    titleRect.origin.y -=1;
+    UILabel *tagLabel = [[UILabel alloc] initWithFrame:titleRect];
+//    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
+    tagLabel.textColor = _nameTagColor;
+    tagLabel.text = nameText;
+    tagLabel.backgroundColor = [UIColor clearColor];
+    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-2];
+    tagLabel.textAlignment = NSTextAlignmentCenter;
+    tagLabel.minimumScaleFactor = 1.;
+    tagLabel.tag = 9;
+    [self addSubview:tagLabel];
+    
+}
+
 - (NSString *)annotationWithMemo:(NSString *)memo
 {
-
+    
     // 1. Separate plain text, annotation name
     NSMutableArray *announcedNames = [[NSMutableArray alloc] init];
     BOOL isEndOfMemo = NO;
@@ -129,11 +172,13 @@
             break;
         }
         
-        // 2) cut start tag
+        // 2) Remove start tag
         NSRange rangeOfTagStartClose = [parsingMemo rangeOfString:@">"];
         
+        NSString *userName = [parsingMemo substringWithRange:NSMakeRange(rangeOfTagStartClose.location+1 ,
+                                                                         ([parsingMemo rangeOfString:@"</u>"].location-1) - rangeOfTagStartClose.location)];
+        
         // conetns =  ...<u uid=1111>name</u>...
-        // Cut tags
         if (rangeOfTagStart.location > 0) {
             parsingMemo = [NSString stringWithFormat:@"%@%@",
                            [parsingMemo substringToIndex:rangeOfTagStart.location],
@@ -145,9 +190,9 @@
                            [parsingMemo substringFromIndex:rangeOfTagStartClose.location+1]];
         }
         
-        
         // 3)end tag
         NSRange rangeOfTagEnd = [parsingMemo rangeOfString:@"</u>"];
+        
         
         // 4) cut end tags
         parsingMemo = [NSString stringWithFormat:@"%@%@%@",
@@ -155,9 +200,14 @@
                        [parsingMemo substringToIndex:rangeOfTagEnd.location],
                        [parsingMemo substringFromIndex:rangeOfTagEnd.location + rangeOfTagEnd.length]];
         
+        
         // 5) Make announced name dic.
-        NSDictionary *announcedNameSet = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:rangeOfTagStart.location], @"start",
-                                          [NSNumber numberWithInteger:rangeOfTagEnd.location-1], @"end", nil];
+        NSDictionary *announcedNameSet = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                          [NSNumber numberWithInteger:rangeOfTagStart.location], @"start",
+                                          [NSNumber numberWithInteger:rangeOfTagEnd.location-1], @"end",
+                                          userName, @"usrName",
+                                          nil];
+        
         if(announcedNames == nil) announcedNames = [[NSMutableArray alloc] init];
         [announcedNames addObject:announcedNameSet];
         
@@ -176,5 +226,14 @@
     [self setNeedsDisplay];
     
     return parsingMemo;
+}
+
+
+- (void)removeAnnotations
+{
+    for (UIView *subView in self.subviews) {
+        
+        if (subView.tag == 9) [subView removeFromSuperview];
+    }
 }
 @end

@@ -11,15 +11,15 @@
 #import <UIKit/UIKit.h>
 
 // Annotation Information Dictionary Keys
-#define MintAnnotationInfoID    @"id"
-#define MintAnnotationInfoName  @"name"
+static NSString* const MintAnnotationInfoID = @"id";
+static NSString* const MintAnnotationInfoName = @"name";
 
 @interface MintAnnotationChatView : UITextView
 
 @property UIColor        *nameTagColor;
 @property UIColor        *nameTagLineColor;
 @property NSMutableArray *annotationList;
-
+@property UIImage        *nameTagImage;
 
 // Add new Anotation
 // info should include 'MintAnnotationInfoID', 'MintAnnotationInfoName'

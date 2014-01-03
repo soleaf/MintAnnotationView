@@ -25,6 +25,8 @@
 		E6F2734B17CB458D00D29E11 /* WriteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F2734917CB458D00D29E11 /* WriteViewController.m */; };
 		E6F2734C17CB458D00D29E11 /* WriteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6F2734A17CB458D00D29E11 /* WriteViewController.xib */; };
 		E6F2734E17CB505B00D29E11 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E6F2734D17CB505B00D29E11 /* README.md */; };
+		F7C5CD0E18765F68009270BB /* tagImage.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C5CD0C18765F68009270BB /* tagImage.png */; };
+		F7C5CD0F18765F68009270BB /* tagImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C5CD0D18765F68009270BB /* tagImage@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +57,8 @@
 		E6F2734917CB458D00D29E11 /* WriteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriteViewController.m; sourceTree = "<group>"; };
 		E6F2734A17CB458D00D29E11 /* WriteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WriteViewController.xib; sourceTree = "<group>"; };
 		E6F2734D17CB505B00D29E11 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		F7C5CD0C18765F68009270BB /* tagImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tagImage.png; sourceTree = "<group>"; };
+		F7C5CD0D18765F68009270BB /* tagImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tagImage@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +118,8 @@
 				E6F2734317CB449B00D29E11 /* CommentListViewController.h */,
 				E6F2734417CB449B00D29E11 /* CommentListViewController.m */,
 				E6F2734517CB449B00D29E11 /* CommentListViewController.xib */,
+				F7C5CD0C18765F68009270BB /* tagImage.png */,
+				F7C5CD0D18765F68009270BB /* tagImage@2x.png */,
 				E6F2732017CB3B2800D29E11 /* Supporting Files */,
 			);
 			name = MintAnnotationViewSample;
@@ -197,6 +203,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F7C5CD0F18765F68009270BB /* tagImage@2x.png in Resources */,
+				F7C5CD0E18765F68009270BB /* tagImage.png in Resources */,
 				E6F2732417CB3B2800D29E11 /* InfoPlist.strings in Resources */,
 				E6F2732C17CB3B2800D29E11 /* Default.png in Resources */,
 				E6F2732E17CB3B2800D29E11 /* Default@2x.png in Resources */,
