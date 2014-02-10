@@ -9,6 +9,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MintAnnotation.h"
 
 // Annotation Information Dictionary Keys
 static NSString* const MintAnnotationInfoID = @"id";
@@ -25,7 +26,7 @@ static NSString* const MintAnnotationInfoName = @"name";
 // info should include 'MintAnnotationInfoID', 'MintAnnotationInfoName'
 //              MintAnnotationInfoID   = Unique Identifier to disturb dobule inserting same info.
 //              MintAnnotationInfoName = Appeared name in view.
-- (void) annotation:(NSDictionary*)info;
+- (void) addAnnotation:(MintAnnotation*)annoatin;
 
 
 // Should Use on textViewDelegate on viewController
@@ -46,6 +47,6 @@ static NSString* const MintAnnotationInfoName = @"name";
         [self.annotationView checkTagDeleting];
      }
  */
-- (BOOL) checkingEditingTag:(UITextView*) textView andRange:(NSRange) editingRange;
+- (BOOL) shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
 
 @end

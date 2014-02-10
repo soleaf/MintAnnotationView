@@ -41,7 +41,12 @@
     [info setObject:@"Mary" forKey:MintAnnotationInfoName];
     [info setObject:@"Other user Information" forKey:@"others"];
     
-    [self.annotationView annotation:info];
+    MintAnnotation *newAnnoation = [[MintAnnotation alloc] init];
+    newAnnoation.usr_id = @"1";
+    newAnnoation.usr_name = @"Mary";
+    [self.annotationView addAnnotation:newAnnoation];
+    
+//    [self.annotationView annotation:info];
 }
 
 - (IBAction)annotateJames:(id)sender {
@@ -50,7 +55,12 @@
     [info setObject:@"James" forKey:MintAnnotationInfoName];
     [info setObject:@"Other user Information" forKey:@"others"];
     
-    [self.annotationView annotation:info];
+    MintAnnotation *newAnnoation = [[MintAnnotation alloc] init];
+    newAnnoation.usr_id = @"2";
+    newAnnoation.usr_name = @"James";
+    [self.annotationView addAnnotation:newAnnoation];
+    
+//    [self.annotationView annotation:info];
 }
 
 - (IBAction)annotateSally:(id)sender {
@@ -59,7 +69,12 @@
     [info setObject:@"Sally" forKey:MintAnnotationInfoName];
     [info setObject:@"Other user Information" forKey:@"others"];
     
-    [self.annotationView annotation:info];
+    MintAnnotation *newAnnoation = [[MintAnnotation alloc] init];
+    newAnnoation.usr_id = @"3";
+    newAnnoation.usr_name = @"Sally";
+    [self.annotationView addAnnotation:newAnnoation];
+    
+//    [self.annotationView annotation:info];
 }
 
 
@@ -75,7 +90,7 @@
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
     // Checking User trying to edit MintAnnotationView's annoatation
-    return [self.annotationView checkingEditingTag:textView andRange:range];
+    return [self.annotationView shouldChangeTextInRange:range replacementText:text];
     
 }
 

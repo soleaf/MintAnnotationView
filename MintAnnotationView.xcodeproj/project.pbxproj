@@ -25,9 +25,25 @@
 		E6F2734B17CB458D00D29E11 /* WriteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E6F2734917CB458D00D29E11 /* WriteViewController.m */; };
 		E6F2734C17CB458D00D29E11 /* WriteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6F2734A17CB458D00D29E11 /* WriteViewController.xib */; };
 		E6F2734E17CB505B00D29E11 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E6F2734D17CB505B00D29E11 /* README.md */; };
+		F72A682218A87ABA00C2FFE1 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72A681B18A87A7D00C2FFE1 /* SenTestingKit.framework */; };
+		F72A682318A87ABA00C2FFE1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6F2731B17CB3B2800D29E11 /* Foundation.framework */; };
+		F72A682418A87ABA00C2FFE1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6F2731917CB3B2800D29E11 /* UIKit.framework */; };
+		F72A682A18A87ABA00C2FFE1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = F72A682818A87ABA00C2FFE1 /* InfoPlist.strings */; };
+		F72A683418A87AE800C2FFE1 /* TestMintAnnotationChatView.m in Sources */ = {isa = PBXBuildFile; fileRef = F72A683318A87AE800C2FFE1 /* TestMintAnnotationChatView.m */; };
+		F72A683718A8986800C2FFE1 /* MintAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F72A683618A8986800C2FFE1 /* MintAnnotation.m */; };
 		F7C5CD0E18765F68009270BB /* tagImage.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C5CD0C18765F68009270BB /* tagImage.png */; };
 		F7C5CD0F18765F68009270BB /* tagImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C5CD0D18765F68009270BB /* tagImage@2x.png */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F72A682E18A87ABA00C2FFE1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E6F2730E17CB3B2800D29E11 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E6F2731517CB3B2800D29E11;
+			remoteInfo = MintAnnotationView;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		E6F2731617CB3B2800D29E11 /* MintAnnotationView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MintAnnotationView.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,6 +73,15 @@
 		E6F2734917CB458D00D29E11 /* WriteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriteViewController.m; sourceTree = "<group>"; };
 		E6F2734A17CB458D00D29E11 /* WriteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WriteViewController.xib; sourceTree = "<group>"; };
 		E6F2734D17CB505B00D29E11 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		F72A67F018A879BD00C2FFE1 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		F72A681B18A87A7D00C2FFE1 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		F72A682118A87ABA00C2FFE1 /* MintAnnotationView Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MintAnnotationView Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F72A682718A87ABA00C2FFE1 /* MintAnnotationView Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MintAnnotationView Tests-Info.plist"; sourceTree = "<group>"; };
+		F72A682918A87ABA00C2FFE1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F72A682D18A87ABA00C2FFE1 /* MintAnnotationView Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MintAnnotationView Tests-Prefix.pch"; sourceTree = "<group>"; };
+		F72A683318A87AE800C2FFE1 /* TestMintAnnotationChatView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestMintAnnotationChatView.m; sourceTree = "<group>"; };
+		F72A683518A8986800C2FFE1 /* MintAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MintAnnotation.h; sourceTree = "<group>"; };
+		F72A683618A8986800C2FFE1 /* MintAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MintAnnotation.m; sourceTree = "<group>"; };
 		F7C5CD0C18765F68009270BB /* tagImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tagImage.png; sourceTree = "<group>"; };
 		F7C5CD0D18765F68009270BB /* tagImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tagImage@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,6 +97,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F72A681E18A87ABA00C2FFE1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F72A682218A87ABA00C2FFE1 /* SenTestingKit.framework in Frameworks */,
+				F72A682418A87ABA00C2FFE1 /* UIKit.framework in Frameworks */,
+				F72A682318A87ABA00C2FFE1 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -81,6 +116,7 @@
 				E6F2734D17CB505B00D29E11 /* README.md */,
 				E6F2733C17CB3B5D00D29E11 /* MintAnnotationView */,
 				E6F2731F17CB3B2800D29E11 /* MintAnnotationViewSample */,
+				F72A682518A87ABA00C2FFE1 /* MintAnnotationView Tests */,
 				E6F2731817CB3B2800D29E11 /* Frameworks */,
 				E6F2731717CB3B2800D29E11 /* Products */,
 			);
@@ -90,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				E6F2731617CB3B2800D29E11 /* MintAnnotationView.app */,
+				F72A682118A87ABA00C2FFE1 /* MintAnnotationView Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,9 +134,11 @@
 		E6F2731817CB3B2800D29E11 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F72A681B18A87A7D00C2FFE1 /* SenTestingKit.framework */,
 				E6F2731917CB3B2800D29E11 /* UIKit.framework */,
 				E6F2731B17CB3B2800D29E11 /* Foundation.framework */,
 				E6F2731D17CB3B2800D29E11 /* CoreGraphics.framework */,
+				F72A67F018A879BD00C2FFE1 /* XCTest.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -143,6 +182,8 @@
 		E6F2733C17CB3B5D00D29E11 /* MintAnnotationView */ = {
 			isa = PBXGroup;
 			children = (
+				F72A683518A8986800C2FFE1 /* MintAnnotation.h */,
+				F72A683618A8986800C2FFE1 /* MintAnnotation.m */,
 				E6F2733D17CB3B5D00D29E11 /* MintAnnotationChatView.h */,
 				E6F2733E17CB3B5D00D29E11 /* MintAnnotationChatView.m */,
 				E6F2734017CB439600D29E11 /* MintAnnotationMemoView.h */,
@@ -150,6 +191,25 @@
 			);
 			name = MintAnnotationView;
 			path = MintAnnotationView/MintAnnotationView;
+			sourceTree = "<group>";
+		};
+		F72A682518A87ABA00C2FFE1 /* MintAnnotationView Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F72A683318A87AE800C2FFE1 /* TestMintAnnotationChatView.m */,
+				F72A682618A87ABA00C2FFE1 /* Supporting Files */,
+			);
+			path = "MintAnnotationView Tests";
+			sourceTree = "<group>";
+		};
+		F72A682618A87ABA00C2FFE1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				F72A682718A87ABA00C2FFE1 /* MintAnnotationView Tests-Info.plist */,
+				F72A682818A87ABA00C2FFE1 /* InfoPlist.strings */,
+				F72A682D18A87ABA00C2FFE1 /* MintAnnotationView Tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,6 +232,24 @@
 			productReference = E6F2731617CB3B2800D29E11 /* MintAnnotationView.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F72A682018A87ABA00C2FFE1 /* MintAnnotationView Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F72A683018A87ABA00C2FFE1 /* Build configuration list for PBXNativeTarget "MintAnnotationView Tests" */;
+			buildPhases = (
+				F72A681D18A87ABA00C2FFE1 /* Sources */,
+				F72A681E18A87ABA00C2FFE1 /* Frameworks */,
+				F72A681F18A87ABA00C2FFE1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F72A682F18A87ABA00C2FFE1 /* PBXTargetDependency */,
+			);
+			name = "MintAnnotationView Tests";
+			productName = "MintAnnotationView Tests";
+			productReference = F72A682118A87ABA00C2FFE1 /* MintAnnotationView Tests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -180,6 +258,11 @@
 			attributes = {
 				LastUpgradeCheck = 0460;
 				ORGANIZATIONNAME = mintcode.org;
+				TargetAttributes = {
+					F72A682018A87ABA00C2FFE1 = {
+						TestTargetID = E6F2731517CB3B2800D29E11;
+					};
+				};
 			};
 			buildConfigurationList = E6F2731117CB3B2800D29E11 /* Build configuration list for PBXProject "MintAnnotationView" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -194,6 +277,7 @@
 			projectRoot = "";
 			targets = (
 				E6F2731517CB3B2800D29E11 /* MintAnnotationView */,
+				F72A682018A87ABA00C2FFE1 /* MintAnnotationView Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -216,6 +300,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F72A681F18A87ABA00C2FFE1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F72A682A18A87ABA00C2FFE1 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -229,11 +321,28 @@
 				E6F2733F17CB3B5D00D29E11 /* MintAnnotationChatView.m in Sources */,
 				E6F2734217CB439600D29E11 /* MintAnnotationMemoView.m in Sources */,
 				E6F2734617CB449B00D29E11 /* CommentListViewController.m in Sources */,
+				F72A683718A8986800C2FFE1 /* MintAnnotation.m in Sources */,
 				E6F2734B17CB458D00D29E11 /* WriteViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F72A681D18A87ABA00C2FFE1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F72A683418A87AE800C2FFE1 /* TestMintAnnotationChatView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F72A682F18A87ABA00C2FFE1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E6F2731517CB3B2800D29E11 /* MintAnnotationView */;
+			targetProxy = F72A682E18A87ABA00C2FFE1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		E6F2732217CB3B2800D29E11 /* InfoPlist.strings */ = {
@@ -250,6 +359,14 @@
 				E6F2733517CB3B2800D29E11 /* en */,
 			);
 			name = ViewController.xib;
+			sourceTree = "<group>";
+		};
+		F72A682818A87ABA00C2FFE1 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F72A682918A87ABA00C2FFE1 /* en */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -335,6 +452,67 @@
 			};
 			name = Release;
 		};
+		F72A683118A87ABA00C2FFE1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MintAnnotationView.app/MintAnnotationView";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MintAnnotationView Tests/MintAnnotationView Tests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MintAnnotationView Tests/MintAnnotationView Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		F72A683218A87ABA00C2FFE1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/MintAnnotationView.app/MintAnnotationView";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MintAnnotationView Tests/MintAnnotationView Tests-Prefix.pch";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "MintAnnotationView Tests/MintAnnotationView Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -355,6 +533,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		F72A683018A87ABA00C2FFE1 /* Build configuration list for PBXNativeTarget "MintAnnotationView Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F72A683118A87ABA00C2FFE1 /* Debug */,
+				F72A683218A87ABA00C2FFE1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

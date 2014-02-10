@@ -11,10 +11,11 @@
 #import <QuartzCore/QuartzCore.h>
 #import "MintAnnotationChatView.h"
 
+static NSString* const keyModelId = @"mintACV_id";
+
 @interface MintAnnotationChatView()
 {
     BOOL isModified;
-    NSString *beforeStrForCheckingDeleting;
     NSMutableArray *tagViews;
 }
 
@@ -29,7 +30,7 @@
     if (self) {
         // Initialization code
         self.contentMode = UIViewContentModeRedraw;
-        tagViews = [[NSMutableArray alloc] init];
+        self.annotationList = [[NSMutableArray alloc] init];
         
     }
     return self;
@@ -40,103 +41,124 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
+    
+    [super drawRect:rect];
+    
     for (UIView *tagView in tagViews) {
         [tagView removeFromSuperview];
     }
     
-    if (self.annotationList == nil) return;
+    if (self.annotationList == nil || self.attributedText.length  < 1) return;
+    
+    // 3. Find and draw
+    
+    [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length)
+    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+        
+        if (value){
+            NSLog(@"%d, %d",range.location, range.length);
+            CFRange cfRange = CFRangeMake(range.location, range.length);
+            [self calculatingTagRectAndDraw:cfRange];
+            
+            
+        }
+
+    }];
+    
+}
+
+- (void) calculatingTagRectAndDraw:(CFRange) annoationStringRange
+{
+    /*
+     Caclulating Rect and Draw
+     */
     
     // Drawing code
     CGContextRef context = UIGraphicsGetCurrentContext();
-
+    
     UITextView *textView = self;
+
+    // 4) Find rect
+    CFRange stringRange = annoationStringRange;
+    UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:stringRange.location];
+    UITextPosition *end = [textView positionFromPosition:begin offset:stringRange.length];
+    UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
     
-    // 1. Define search keyword
-    NSString *finding = textView.text;
+    // 5) Need 2line?
+    CGPoint firstCharPosition = [textView caretRectForPosition:begin].origin;
+    CGPoint lastCharPosition = [textView caretRectForPosition:end].origin;
     
-    // 2. Pos = before text pos + new pos
-    NSInteger prefixPos = 0;
-    
-    // 3. Find and draw
-    while ([finding rangeOfString:@"@"].location != NSNotFound) {
+    if (firstCharPosition.y < lastCharPosition.y){
         
-        // 1) Where is '@'
-        NSInteger startPos = [finding rangeOfString:@"@"].location;
+        // Finf pos of first line
+        float secondY = firstCharPosition.y;
+        CFRange secondStrRange = CFRangeMake(stringRange.location, 1); // first time is just init, not have mean of value
+        NSInteger secondPos = stringRange.location;
+        NSInteger cnt = 0;
         
-        // 2) Cut
-        NSString *findingStr = [finding substringFromIndex:startPos];
-    
-        NSInteger endPos = [findingStr rangeOfString:@" "].location;
-        
-        if (endPos < 1 || endPos > findingStr.length) return;
-        
-        // 3) Is in annotation list.
-        NSString *name = [[findingStr substringToIndex:endPos] substringFromIndex:1];
-        BOOL nameInAnnoncedList = NO;
-        for (NSDictionary *item in self.annotationList) {
-            if ([[item objectForKey:MintAnnotationInfoName] isEqualToString:name]) {
-                nameInAnnoncedList = YES;
-                break;
-            }
+        while (secondY < lastCharPosition.y) {
+            
+            secondPos++;
+            cnt++;
+            
+            secondStrRange = CFRangeMake(secondPos, stringRange.length - cnt);
+            UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
+            CGPoint secondPosition = [textView caretRectForPosition:secondBegin].origin;
+            secondY = secondPosition.y;
+            
         }
         
-        if (nameInAnnoncedList){
-            
-            // 4) Find rect
-            CFRange stringRange = CFRangeMake(startPos +prefixPos, endPos);
-            UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:stringRange.location];
-            UITextPosition *end = [textView positionFromPosition:begin offset:stringRange.length];
-            UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
-            
-            // 5) Need 2line?
-            CGPoint firstLineBeginPosition = [textView caretRectForPosition:begin].origin;
-            CGPoint secondLineEndPosition = [textView caretRectForPosition:end].origin;
-            
-            if (firstLineBeginPosition.y < secondLineEndPosition.y){
-                
-                // Finf pos of first line
-                float secondY = firstLineBeginPosition.y;
-                CFRange secondStrRange = CFRangeMake(startPos+ prefixPos, 1);
-                NSInteger secondPos = startPos + prefixPos;
-                NSInteger cnt = 0;
-                
-                while (secondY < secondLineEndPosition.y) {
-                    
-                    secondPos++;
-                    cnt++;
-                    
-                    secondStrRange = CFRangeMake(secondPos, stringRange.length - cnt);
-                    UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
-                    CGPoint secondPosition = [textView caretRectForPosition:secondBegin].origin;
-                    secondY = secondPosition.y;
-                    
-                }
-                
-                // Calculate rect
-                UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
-                UITextPosition *secondEnd = [textView positionFromPosition:secondBegin offset:secondStrRange.length];
-                UITextRange *secondTextRange = [textView textRangeFromPosition:secondBegin toPosition:secondEnd];
-                
-                // 1st line
-                [self drawTag:context Rect:[textView firstRectForRange:textRange]
-                         name:[self textInRange:[textView textRangeFromPosition:textRange.start toPosition:secondBegin]]];
-                
-                // 2nd Line
-                [self drawTag:context Rect:[textView firstRectForRange:secondTextRange]
-                                    name:[self textInRange:secondTextRange]];
-            }
-            else{
-                // Draw rect first line
-                [self drawTag:context Rect:[textView firstRectForRange:textRange] name:[self textInRange:textRange]];
-            }
-            
-        } // End if of Check is in annotation list.
+        // Calculate rect
+        UITextPosition *secondBegin = [textView positionFromPosition:textView.beginningOfDocument offset:secondStrRange.location];
+        UITextPosition *secondEnd = [textView positionFromPosition:secondBegin offset:secondStrRange.length];
+        UITextRange *secondTextRange = [textView textRangeFromPosition:secondBegin toPosition:secondEnd];
         
-        prefixPos = prefixPos + startPos + endPos;
-        finding = [finding substringFromIndex:startPos+endPos]; // Keyword more to find
+        // 1st line
+        [self drawTag:context Rect:[textView firstRectForRange:textRange]
+                 name:[self textInRange:[textView textRangeFromPosition:textRange.start toPosition:secondBegin]]];
         
+        // 2nd Line
+        [self drawTag:context Rect:[textView firstRectForRange:secondTextRange]
+                 name:[self textInRange:secondTextRange]];
+    }
+    else{
+        // Draw rect first line
+        [self drawTag:context Rect:[textView firstRectForRange:textRange] name:[self textInRange:textRange]];
     }
 }
+
+- (NSRange) findTagPosition:(MintAnnotation*)annoation
+{
+    
+    __block NSRange stringRange = NSMakeRange(0, 0);
+    [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length-1)
+                                    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                        
+                                        if ([value isEqualToString:annoation.usr_id])
+                                        {
+                                            stringRange = range;
+//                                            stringRange = CFRangeMake(range.location, range.location + range.length);
+                                        }
+     
+                                    }];
+    
+    return stringRange;
+    
+}
+
+- (MintAnnotation *) annotationForId:(NSString*)usr_id
+{
+    for (MintAnnotation *annotation in self.annotationList) {
+        
+        if ([annotation.usr_id isEqualToString:usr_id])
+            return annotation;
+    }
+    
+    return nil;
+}
+
+
+#pragma mark - Draw Tag graphics
 
 - (void) drawTag: (CGContextRef) context Rect:(CGRect) rect name:(NSString*)nameText
 {
@@ -183,227 +205,217 @@
     tagLabel.backgroundColor = [UIColor clearColor];
     tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-2];
     tagLabel.textAlignment = NSTextAlignmentCenter;
-    tagLabel.minimumScaleFactor = 1.;
+    tagLabel.minimumScaleFactor = .5;
     [self addSubview:tagLabel];
+    
+    if (!tagViews)
+        tagViews = [[NSMutableArray alloc] init];
     
     [tagViews addObject:tagImage];
     [tagViews addObject:tagLabel];
 }
 
-- (void)annotation:(NSDictionary *)info
-{
 
-    // Check Is Already Imported
-    BOOL isAlreadyAdded = NO;
-    for (NSDictionary *item in self.annotationList) {
+#pragma mark - Modeling
+
+// --- NEW ---
+- (void)addAnnotation:(MintAnnotation *)newAnnoation
+{
+    // Check aleady imported
+    for (MintAnnotation *annotation in self.annotationList) {
         
-        if ([[item objectForKey:MintAnnotationInfoID]isEqualToString:[info objectForKey:MintAnnotationInfoID]])
-            isAlreadyAdded = YES;
+        if ([annotation.usr_id isEqualToString:newAnnoation.usr_id])
+        {
+            NSLog(@"MintAnnoationChatView >> addAnoation >> id'%@'is aleady in", newAnnoation.usr_id);
+            return;
+        }
     }
     
-    if (!isAlreadyAdded){
-        
-        if (self.annotationList == nil) self.annotationList = [[NSMutableArray alloc] init];
-        
-        NSString *tempCommentWriting = self.text;
-        
-        // display name
-        if (tempCommentWriting.length == 0){
-            tempCommentWriting = [NSString stringWithFormat:@"@%@ ", [info objectForKey:MintAnnotationInfoName]];
-        }
-        else{
-            
-            NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
-            
-            // This is first word after new line.
-            if ([prevString isEqualToString:@"\n"])
-                tempCommentWriting = [NSString stringWithFormat:@"%@@%@ ",
-                                      tempCommentWriting, [info objectForKey:MintAnnotationInfoName]];
-            else
-                tempCommentWriting = [NSString stringWithFormat:@"%@ @%@ ",
-                                      tempCommentWriting, [info objectForKey:MintAnnotationInfoName]];
-            
-        }
-        
-        self.text = tempCommentWriting;
-    }
+    // Add
+    if (!self.annotationList) self.annotationList = [[NSMutableArray alloc] init];
+    [self.annotationList addObject:newAnnoation];
+
+    // Insert Plain user name text
+    NSMutableDictionary *attr = [[NSMutableDictionary alloc] initWithDictionary:[self defaultAttributedString]];
+    [attr setObject:newAnnoation.usr_id forKey:keyModelId];
+    NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc]
+                                             initWithString:[NSString stringWithFormat:@"%@", newAnnoation.usr_name]
+                                             attributes:attr];
+
+    NSMutableAttributedString *spaceStringPefix = nil;
+    NSString *tempCommentWriting = self.text;
+
+    // display name
     
-    // Add info to annotationList
-    [self.annotationList addObject:info];
+    // Add Space
+    if (tempCommentWriting.length > 0){
+        
+        NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
+        
+        if (![prevString isEqualToString:@"\n"])
+        {
+            spaceStringPefix = [[NSMutableAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]];
+        }
+    }
+
+    NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    if (spaceStringPefix)
+        [conts appendAttributedString:spaceStringPefix];
+    [conts appendAttributedString:nameString];
+    NSMutableAttributedString *afterBlank = [[NSMutableAttributedString alloc] initWithString:@" "
+                                                                                    attributes:[self defaultAttributedString]];
+    [conts appendAttributedString:afterBlank];
+    
+
+    self.attributedText = conts;
     
     [self setNeedsDisplay];
     
     // Pass Delegate
     if (self.delegate && [self.delegate respondsToSelector:@selector(textViewDidChange:)])
         [self.delegate textViewDidChange:self];
+}
 
+
+// ----
+
+
+- (NSDictionary*) defaultAttributedString
+{
+    return @{NSFontAttributeName : [UIFont systemFontOfSize:14]
+             };
 }
 
 
 - (void) checkTagDeleting
 {
-    
-    if (isModified){
-        isModified = NO;
-        return;
-    }
-    
-    UITextView *textView = self;
-    
-    // 0. Check deleting
-    if (beforeStrForCheckingDeleting.length > textView.text.length){
-        
-        // 1. Is deleted Char on tag ?
-        
-        // 1) Diff
-        NSInteger modifiedPos = [self findChangedPoint:beforeStrForCheckingDeleting andModified:textView.text];
-        
-        // 2) Is in AnnotationList Deleted char's?
-        
-        // Where is pos of '@'
-        
-        // (1) Define keyword to find
-        NSString *finding = beforeStrForCheckingDeleting;
-        
-        // (2) Before Keyword Pos + New Pos
-        NSInteger prefixPos = 0;
-        
-        while ([finding rangeOfString:@"@"].location != NSNotFound) {
-            
-            // Pos of '@'
-            NSInteger startPos = [finding rangeOfString:@"@"].location;
-            
-            // Cut
-            NSString *findingStr = [finding substringFromIndex:startPos];
-
-            NSInteger endPos = [findingStr rangeOfString:@" "].location;
-            
-            if (endPos < 1 || endPos > findingStr.length) return;
-            
-            // Find rect
-            NSInteger tagRangeBegin = startPos + prefixPos;
-            NSInteger tagRangeEnd = tagRangeBegin + endPos;
-            
-            // Is in AnnounceList a rect
-            if (tagRangeBegin <= modifiedPos && modifiedPos <= tagRangeEnd){
-                
-                // Disturb Recall (infinite loop)
-                isModified = YES;
-                
-                // Remove all chars of annotation tag
-                if (tagRangeEnd >= textView.text.length) tagRangeEnd = textView.text.length;
-                
-                // Remove it for annotation list
-                NSString *name = [[findingStr substringToIndex:endPos] substringFromIndex:1];
-                BOOL isDeleted = NO;
-                for (NSInteger i = 0; i < self.annotationList.count; i++) {
-                    
-                    NSDictionary *item = [self.annotationList objectAtIndex:i];
-                    if ([[item objectForKey:MintAnnotationInfoName] isEqualToString:name]) {
-                        [self.annotationList removeObjectAtIndex:i];
-                        isDeleted = YES;
-                        break;
-                    }
-                    
-                }
-                
-                if (isDeleted){
-                    
-                    textView.text =  [NSString stringWithFormat:@"%@%@",[textView.text substringToIndex:tagRangeBegin], [textView.text substringFromIndex:tagRangeEnd]];
-                    beforeStrForCheckingDeleting = textView.text;
-                    [textView setNeedsDisplay];
-                    return;
-                    
-                }
-                
-                
-                
-            }
-            
-            prefixPos = prefixPos + startPos + endPos;
-            finding = [finding substringFromIndex:startPos+endPos]; // More searching keyword
-            
-        }
-        
-       
-    }
-
     [self setNeedsDisplay];
-    beforeStrForCheckingDeleting = textView.text;
+   
+//    NSLog(@"changed invoked >%@<", self.attributedText.string);
+    return;
+    
 }
 
-- (BOOL) checkingEditingTag:(UITextView*) textView andRange:(NSRange) editingRange
+- (BOOL) shouldChangeTextInRange:(NSRange)editingRange replacementText:(NSString *)text
 {
-    // 0. Check deleting
     
-    // 1. Is deleted Char on tag?
+    __block BOOL result = YES;
     
-    // (1) Define Keyword
-    NSString *finding = beforeStrForCheckingDeleting;
-    
-    // (2) Before searched pos + new pos
-    NSInteger prefixPos = 0;
-    
-    while ([finding rangeOfString:@"@"].location != NSNotFound) {
-        
-        // Check pos of '@'
-        NSInteger startPos = [finding rangeOfString:@"@"].location;
-        
-        // Cut
-        NSString *findingStr = [finding substringFromIndex:startPos];
-        
-        NSInteger endPos = [findingStr rangeOfString:@" "].location;
-        
-        if (endPos < 1 || endPos > findingStr.length) return YES; // Permit edit
-        
-        // Find rect
-        NSInteger tagRangeBegin = startPos + prefixPos;
-        NSInteger tagRangeEnd = tagRangeBegin + endPos;
-        
-        // Is in AnnounceList a rect
-        if (tagRangeBegin < editingRange.location && editingRange.location + editingRange.length -1 < tagRangeEnd -1){
-            
-            NSString *name = [[findingStr substringToIndex:endPos] substringFromIndex:1];
-            BOOL nameInAnnoncedList = NO;
-            for (NSDictionary *item in self.annotationList) {
+    // Checking Trying to insert within tag
+    if (text.length > 0)
+    {
+        NSRange rangeOfCheckingEditingInTag = editingRange;
+        if (rangeOfCheckingEditingInTag.length  == 0) // Insert
+        {
+            if (rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length <= self.attributedText.length)
+            {
+                rangeOfCheckingEditingInTag.length = 1;
+                rangeOfCheckingEditingInTag.location-=1;
                 
-                if ([[item objectForKey:MintAnnotationInfoName] isEqualToString:name]) {
-                    nameInAnnoncedList = YES;
-                    break;
+                //
+                if (rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length > self.attributedText.length)
+                {
+                    rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
                 }
-                
             }
             
-            return  nameInAnnoncedList ? NO : YES;
+            
         }
         
-        prefixPos = prefixPos + startPos + endPos;
-        finding = [finding substringFromIndex:startPos+endPos]; // More searching keyword
+        [self.attributedText enumerateAttributesInRange:rangeOfCheckingEditingInTag options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+            
+            if ([attrs objectForKey:keyModelId] && [[attrs objectForKey:keyModelId] length] > 0)
+            {
+                NSLog(@"------- Editing In Tag");
+                result = NO;
+            }
+            
+        }];
         
+        
+        return result;
     }
-    
-    return YES;
+    // Deleting
+    else
+    {
+        editingRange.location-=1;
+        if (editingRange.location == -1) editingRange.location = 0;
+        NSLog(@"editingRange :%d, %d",editingRange.location, editingRange.length);
+        
+        [self.attributedText enumerateAttributesInRange:editingRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+            
+            if ([attrs objectForKey:keyModelId] && [[attrs objectForKey:keyModelId] length] > 0)
+            {
+                
+                NSRange tagRange = [self findTagPosition:[self annotationForId:[attrs objectForKey:keyModelId]]];
+                
+                NSLog(@"Deleted annotation tag >>>>> id(%@):range(%d,%d)",[attrs objectForKey:keyModelId], tagRange.location, tagRange.length);
+                
+                self.attributedText = [self attributedStringWithCutOutOfRange:tagRange];
+                self.selectedRange = NSMakeRange(tagRange.location, 0);
+                
+                [self.annotationList removeObject:[self annotationForId:[attrs objectForKey:keyModelId]]];
+                [self setNeedsDisplay];
+            }
+            
+        }];
+        
+        return YES;
+
+    }
     
 }
 
-
-- (NSInteger) findChangedPoint: (NSString*)origin andModified :(NSString*) comparison
+- (NSAttributedString *) attributedStringWithCutOutOfRange:(NSRange)cuttingRange
 {
-    // Return Region pos of tow text
+    NSLog(@"%@",[self.attributedText string]);
     
-    NSInteger point = 0;
+    NSAttributedString *head = nil;
+    if (cuttingRange.location > 0 && cuttingRange.length > 0)
+        head = [self.attributedText attributedSubstringFromRange:NSMakeRange(0, cuttingRange.location-1)];
+    else
+        head = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
     
-    for (point = 0; point < origin.length; point++) {
-        
-        if (comparison.length <= point || origin.length <= point) break;
-        
-        // Occur a diff
-        if (![[origin substringToIndex:point] isEqualToString:[comparison substringToIndex:point]]) break;
-        
-    }
     
-    return point;
+    NSLog(@"%@",[self.attributedText string]);
+    
+    NSAttributedString *tail = nil;
+    if (cuttingRange.location + cuttingRange.length <= self.attributedText.string.length)
+        tail = [self.attributedText attributedSubstringFromRange:NSMakeRange(cuttingRange.location + cuttingRange.length,
+                                                                             self.attributedText.length - 1 - cuttingRange.location - cuttingRange.length)];
+    
+    
+    NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
+    if (head)
+        [conts appendAttributedString:head];
+    if (tail)
+        [conts appendAttributedString:tail];
+    
+    return conts;
+    
+    
+    
+    NSLog(@"%@",[self.attributedText string]);
 }
+
+
+//- (NSInteger) findChangedPoint: (NSString*)origin andModified :(NSString*) comparison
+//{
+//    // Return Region pos of tow text
+//    
+//    NSInteger point = 0;
+//    
+//    for (point = 0; point < origin.length; point++) {
+//        
+//        if (comparison.length <= point || origin.length <= point) break;
+//        
+//        // Occur a diff
+//        if (![[origin substringToIndex:point] isEqualToString:[comparison substringToIndex:point]]) break;
+//        
+//    }
+//    
+//    return point;
+//}
 
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
