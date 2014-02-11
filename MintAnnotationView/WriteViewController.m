@@ -36,45 +36,29 @@
 
 - (IBAction)annotateMary:(id)sender {
     
-    NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
-    [info setObject:@"0" forKey:MintAnnotationInfoID];
-    [info setObject:@"Mary" forKey:MintAnnotationInfoName];
-    [info setObject:@"Other user Information" forKey:@"others"];
-    
     MintAnnotation *newAnnoation = [[MintAnnotation alloc] init];
     newAnnoation.usr_id = @"1";
     newAnnoation.usr_name = @"Mary";
     [self.annotationView addAnnotation:newAnnoation];
     
-//    [self.annotationView annotation:info];
 }
 
 - (IBAction)annotateJames:(id)sender {
-    NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
-    [info setObject:@"1" forKey:MintAnnotationInfoID];
-    [info setObject:@"James" forKey:MintAnnotationInfoName];
-    [info setObject:@"Other user Information" forKey:@"others"];
     
     MintAnnotation *newAnnoation = [[MintAnnotation alloc] init];
     newAnnoation.usr_id = @"2";
     newAnnoation.usr_name = @"James";
     [self.annotationView addAnnotation:newAnnoation];
     
-//    [self.annotationView annotation:info];
 }
 
 - (IBAction)annotateSally:(id)sender {
-    NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
-    [info setObject:@"2" forKey:MintAnnotationInfoID];
-    [info setObject:@"Sally" forKey:MintAnnotationInfoName];
-    [info setObject:@"Other user Information" forKey:@"others"];
-    
+
     MintAnnotation *newAnnoation = [[MintAnnotation alloc] init];
     newAnnoation.usr_id = @"3";
     newAnnoation.usr_name = @"Sally";
     [self.annotationView addAnnotation:newAnnoation];
-    
-//    [self.annotationView annotation:info];
+
 }
 
 
@@ -83,7 +67,7 @@
 - (void)textViewDidChange:(UITextView *)textView
 {
     // Checking User trying to remove MintAnnotationView's annoatation
-    [self.annotationView checkTagDeleting];
+    [self.annotationView textViewDidChange:textView];
     
 }
 

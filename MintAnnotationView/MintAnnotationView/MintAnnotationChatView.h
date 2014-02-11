@@ -11,11 +11,7 @@
 #import <UIKit/UIKit.h>
 #import "MintAnnotation.h"
 
-// Annotation Information Dictionary Keys
-static NSString* const MintAnnotationInfoID = @"id";
-static NSString* const MintAnnotationInfoName = @"name";
-
-@interface MintAnnotationChatView : UITextView
+@interface MintAnnotationChatView : UITextView <UITextViewDelegate>
 
 @property UIColor        *nameTagColor;
 @property UIColor        *nameTagLineColor;
@@ -37,7 +33,7 @@ static NSString* const MintAnnotationInfoName = @"name";
         
     }
  */
-- (void) checkTagDeleting;
+- (void)textViewDidChange:(UITextView *)textView;
 
 
 // Should Use on textViewDelegate on viewController

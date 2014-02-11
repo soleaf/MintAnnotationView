@@ -55,7 +55,7 @@ static NSString* const keyModelId = @"mintACV_id";
     [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length)
     options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
         
-        if (value){
+        if ([self annotationForId:value]){
             NSLog(@"%d, %d",range.location, range.length);
             CFRange cfRange = CFRangeMake(range.location, range.length);
             [self calculatingTagRectAndDraw:cfRange];
@@ -127,35 +127,6 @@ static NSString* const keyModelId = @"mintACV_id";
     }
 }
 
-- (NSRange) findTagPosition:(MintAnnotation*)annoation
-{
-    
-    __block NSRange stringRange = NSMakeRange(0, 0);
-    [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length-1)
-                                    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
-                                        
-                                        if ([value isEqualToString:annoation.usr_id])
-                                        {
-                                            stringRange = range;
-//                                            stringRange = CFRangeMake(range.location, range.location + range.length);
-                                        }
-     
-                                    }];
-    
-    return stringRange;
-    
-}
-
-- (MintAnnotation *) annotationForId:(NSString*)usr_id
-{
-    for (MintAnnotation *annotation in self.annotationList) {
-        
-        if ([annotation.usr_id isEqualToString:usr_id])
-            return annotation;
-    }
-    
-    return nil;
-}
 
 
 #pragma mark - Draw Tag graphics
@@ -195,24 +166,42 @@ static NSString* const keyModelId = @"mintACV_id";
 {
     self.nameTagColor = self.nameTagColor;
     
-    UIImageView *tagImage = [[UIImageView alloc] initWithFrame:rect];
-    tagImage.image = self.nameTagImage;
-    [self addSubview:tagImage];
+    UIButton *tagButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    tagButton.frame = CGRectMake(rect.origin.x,
+                                 rect.origin.y+1,
+                                 rect.size.width,
+                                 rect.size.height);
     
-    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
-    tagLabel.textColor = _nameTagColor;
-    tagLabel.text = nameText;
-    tagLabel.backgroundColor = [UIColor clearColor];
-    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-2];
-    tagLabel.textAlignment = NSTextAlignmentCenter;
-    tagLabel.minimumScaleFactor = .5;
-    [self addSubview:tagLabel];
-    
+    [tagButton setBackgroundImage:self.nameTagImage forState:UIControlStateNormal];
+    [tagButton setTitle:nameText forState:UIControlStateNormal];
+    [tagButton setTitleColor:self.nameTagColor forState:UIControlStateNormal];
+    tagButton.titleLabel.font = [UIFont systemFontOfSize:self.font.pointSize-4];
+
     if (!tagViews)
         tagViews = [[NSMutableArray alloc] init];
     
-    [tagViews addObject:tagImage];
-    [tagViews addObject:tagLabel];
+    [tagViews addObject:tagButton];
+    [self addSubview:tagButton];
+    
+    
+//    UIImageView *tagImage = [[UIImageView alloc]
+//                             tagImage.image = self.nameTagImage;
+//    [self addSubview:tagImage];
+//    
+//    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
+//    tagLabel.textColor = _nameTagColor;
+//    tagLabel.text = nameText;
+//    tagLabel.backgroundColor = [UIColor clearColor];
+//    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-4];
+//    tagLabel.textAlignment = NSTextAlignmentCenter;
+//    tagLabel.minimumScaleFactor = .2;
+//    [self addSubview:tagLabel];
+    
+//    if (!tagViews)
+//        tagViews = [[NSMutableArray alloc] init];
+    
+//    [tagViews addObject:tagImage];
+//    [tagViews addObject:tagLabel];
 }
 
 
@@ -245,29 +234,41 @@ static NSString* const keyModelId = @"mintACV_id";
     NSMutableAttributedString *spaceStringPefix = nil;
     NSString *tempCommentWriting = self.text;
 
+    
+    NSInteger cursor = self.selectedRange.location;
     // display name
     
-    // Add Space
-    if (tempCommentWriting.length > 0){
-        
-        NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
-        
-        if (![prevString isEqualToString:@"\n"])
-        {
-            spaceStringPefix = [[NSMutableAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]];
+    // Add Last
+    if (cursor == self.attributedText.length)
+    {
+        // Add Space
+        if (tempCommentWriting.length > 0){
+            
+            NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
+            
+            if (![prevString isEqualToString:@"\n"])
+            {
+                spaceStringPefix = [[NSMutableAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]];
+            }
         }
+        
+        NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+        if (spaceStringPefix)
+            [conts appendAttributedString:spaceStringPefix];
+        [conts appendAttributedString:nameString];
+        NSMutableAttributedString *afterBlank = [[NSMutableAttributedString alloc] initWithString:@" "
+                                                                                       attributes:[self defaultAttributedString]];
+        [conts appendAttributedString:afterBlank];
+        
+        self.attributedText = conts;
+
     }
-
-    NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
-    if (spaceStringPefix)
-        [conts appendAttributedString:spaceStringPefix];
-    [conts appendAttributedString:nameString];
-    NSMutableAttributedString *afterBlank = [[NSMutableAttributedString alloc] initWithString:@" "
-                                                                                    attributes:[self defaultAttributedString]];
-    [conts appendAttributedString:afterBlank];
+    // Insert in text
+    else
+    {
+        self.attributedText = [self attributedStringInsertString:nameString at:cursor];
+    }
     
-
-    self.attributedText = conts;
     
     [self setNeedsDisplay];
     
@@ -276,24 +277,63 @@ static NSString* const keyModelId = @"mintACV_id";
         [self.delegate textViewDidChange:self];
 }
 
-
-// ----
-
-
-- (NSDictionary*) defaultAttributedString
+- (NSRange) findTagPosition:(MintAnnotation*)annoation
 {
-    return @{NSFontAttributeName : [UIFont systemFontOfSize:14]
-             };
+    
+    __block NSRange stringRange = NSMakeRange(0, 0);
+    [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length-1)
+                                    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                        
+                                        if ([value isEqualToString:annoation.usr_id])
+                                        {
+                                            stringRange = range;
+                                            //                                            stringRange = CFRangeMake(range.location, range.location + range.length);
+                                        }
+                                        
+                                    }];
+    
+    return stringRange;
+    
+}
+
+- (MintAnnotation *) annotationForId:(NSString*)usr_id
+{
+    for (MintAnnotation *annotation in self.annotationList) {
+        
+        if ([annotation.usr_id isEqualToString:usr_id])
+            return annotation;
+    }
+    
+    return nil;
 }
 
 
-- (void) checkTagDeleting
+
+#pragma mark - UITextviewDelegate
+
+- (void)textViewDidChange:(UITextView *)textView
 {
     [self setNeedsDisplay];
-   
-//    NSLog(@"changed invoked >%@<", self.attributedText.string);
+
+    // length = 0, but attributed have id
+    if (self.attributedText.string.length == 0)
+    {
+        [self clearAll];
+    }
+    
     return;
     
+}
+
+- (void) clearAll
+{
+//    self.attributedText = [[NSAttributedString alloc]
+//                          initWithString:@"" attributes:[self defaultAttributedString]];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    [attributedString removeAttribute: keyModelId range: NSMakeRange(0, self.text.length)];
+    [self.annotationList removeAllObjects];
+    
+    NSLog(@"cleared attributes!");
 }
 
 - (BOOL) shouldChangeTextInRange:(NSRange)editingRange replacementText:(NSString *)text
@@ -305,26 +345,31 @@ static NSString* const keyModelId = @"mintACV_id";
     if (text.length > 0)
     {
         NSRange rangeOfCheckingEditingInTag = editingRange;
-        if (rangeOfCheckingEditingInTag.length  == 0) // Insert
+        if (rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length <= self.attributedText.length)
         {
-            if (rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length <= self.attributedText.length)
+            rangeOfCheckingEditingInTag.length = 1;
+            rangeOfCheckingEditingInTag.location-=1;
+            
+            NSLog(@"<<<<< ----------- 1");
+            
+            //
+            NSInteger totalLength = rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length;
+            if (totalLength > self.attributedText.length)
             {
-                rangeOfCheckingEditingInTag.length = 1;
-                rangeOfCheckingEditingInTag.location-=1;
-                
-                //
-                if (rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length > self.attributedText.length)
-                {
-                    rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
-                }
+                rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
+                NSLog(@"<<<<< ----------- 2");
             }
-            
-            
+            else if (totalLength < 1)
+            {
+                rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
+                NSLog(@"<<<<< -------------3");
+            }
         }
+    
         
         [self.attributedText enumerateAttributesInRange:rangeOfCheckingEditingInTag options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
             
-            if ([attrs objectForKey:keyModelId] && [[attrs objectForKey:keyModelId] length] > 0)
+            if ([attrs objectForKey:keyModelId] && [self annotationForId:[attrs objectForKey:keyModelId]])
             {
                 NSLog(@"------- Editing In Tag");
                 result = NO;
@@ -339,12 +384,23 @@ static NSString* const keyModelId = @"mintACV_id";
     else
     {
         editingRange.location-=1;
-        if (editingRange.location == -1) editingRange.location = 0;
+        if (editingRange.location == -1) {
+            editingRange.location = 0;
+            NSLog(@"location >>>> 0");
+            
+            if (self.attributedText.length == 0)
+            {
+                [self clearAll];
+            }
+            
+            return YES;
+            
+        }
         NSLog(@"editingRange :%d, %d",editingRange.location, editingRange.length);
         
         [self.attributedText enumerateAttributesInRange:editingRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
             
-            if ([attrs objectForKey:keyModelId] && [[attrs objectForKey:keyModelId] length] > 0)
+            if ([attrs objectForKey:keyModelId] && [self annotationForId:[attrs objectForKey:keyModelId]])
             {
                 
                 NSRange tagRange = [self findTagPosition:[self annotationForId:[attrs objectForKey:keyModelId]]];
@@ -366,10 +422,16 @@ static NSString* const keyModelId = @"mintACV_id";
     
 }
 
+
+#pragma mark - AttributedStrings
 - (NSAttributedString *) attributedStringWithCutOutOfRange:(NSRange)cuttingRange
 {
-    NSLog(@"%@",[self.attributedText string]);
+    /*
+     Cut out string of range on full string
+     to get head + tail without middle
+     */
     
+    // Cutting Heads
     NSAttributedString *head = nil;
     if (cuttingRange.location > 0 && cuttingRange.length > 0)
         head = [self.attributedText attributedSubstringFromRange:NSMakeRange(0, cuttingRange.location-1)];
@@ -377,13 +439,12 @@ static NSString* const keyModelId = @"mintACV_id";
         head = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
     
     
-    NSLog(@"%@",[self.attributedText string]);
-    
+    // Cutting Tail
+
     NSAttributedString *tail = nil;
     if (cuttingRange.location + cuttingRange.length <= self.attributedText.string.length)
         tail = [self.attributedText attributedSubstringFromRange:NSMakeRange(cuttingRange.location + cuttingRange.length,
                                                                              self.attributedText.length - 1 - cuttingRange.location - cuttingRange.length)];
-    
     
     NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
     if (head)
@@ -392,34 +453,64 @@ static NSString* const keyModelId = @"mintACV_id";
         [conts appendAttributedString:tail];
     
     return conts;
+}
+
+- (NSAttributedString *) attributedStringInsertString:(NSAttributedString*)insertingStr at:(NSInteger)position
+{
+    /*
+     Insert str within text at position
+     with blank
+     -> head + blank + insertingStr + blank + tail
+     */
+    
+    // Cutting Heads
+    NSAttributedString *head = nil;
+    if (position > 0 && self.attributedText.string.length > 0)
+        head = [self.attributedText attributedSubstringFromRange:NSMakeRange(0, position)];
+    else
+        head = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
     
     
+    // Cutting Tail
+    NSAttributedString *tail = nil;
+    if (position + 1 < self.attributedText.string.length)
+        tail = [self.attributedText attributedSubstringFromRange:NSMakeRange(position,
+                                                                             self.attributedText.length - position)];
     
-    NSLog(@"%@",[self.attributedText string]);
+    NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
+    
+    if (head)
+    {
+        [conts appendAttributedString:head];
+        [conts appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]]];
+    }
+    
+    [conts appendAttributedString:insertingStr];
+    
+    if (tail)
+    {
+        [conts appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]]];
+        [conts appendAttributedString:tail];
+    }
+    
+    return conts;
+}
+
+- (NSDictionary*) defaultAttributedString
+{
+    return @{NSFontAttributeName : self.font};
 }
 
 
-//- (NSInteger) findChangedPoint: (NSString*)origin andModified :(NSString*) comparison
-//{
-//    // Return Region pos of tow text
-//    
-//    NSInteger point = 0;
-//    
-//    for (point = 0; point < origin.length; point++) {
-//        
-//        if (comparison.length <= point || origin.length <= point) break;
-//        
-//        // Occur a diff
-//        if (![[origin substringToIndex:point] isEqualToString:[comparison substringToIndex:point]]) break;
-//        
-//    }
-//    
-//    return point;
-//}
 
+#pragma mark -ETC
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
+    /*
+     Couldn't Cut, Copy, Past
+     */
     return NO;
 }
+
 @end
