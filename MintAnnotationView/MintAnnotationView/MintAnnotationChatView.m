@@ -318,22 +318,11 @@ static NSString* const keyModelId = @"mintACV_id";
     // length = 0, but attributed have id
     if (self.attributedText.string.length == 0)
     {
-        [self clearAll];
+        [self clearAllAttributedStrings];
     }
     
     return;
     
-}
-
-- (void) clearAll
-{
-//    self.attributedText = [[NSAttributedString alloc]
-//                          initWithString:@"" attributes:[self defaultAttributedString]];
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
-    [attributedString removeAttribute: keyModelId range: NSMakeRange(0, self.text.length)];
-    [self.annotationList removeAllObjects];
-    
-    NSLog(@"cleared attributes!");
 }
 
 - (BOOL) shouldChangeTextInRange:(NSRange)editingRange replacementText:(NSString *)text
@@ -390,7 +379,7 @@ static NSString* const keyModelId = @"mintACV_id";
             
             if (self.attributedText.length == 0)
             {
-                [self clearAll];
+                [self clearAllAttributedStrings];
             }
             
             return YES;
@@ -513,4 +502,48 @@ static NSString* const keyModelId = @"mintACV_id";
     return NO;
 }
 
+- (NSString*) makeStringWithTagAndTagIdKey:(NSString*)tagIdKey
+{
+
+    NSMutableAttributedString *workingStr = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    
+    // Finding Replace ranges and annoations
+    [workingStr enumerateAttribute:keyModelId inRange:NSMakeRange(0, workingStr.string.length) options:0
+                        usingBlock:^(id value, NSRange range, BOOL *stop) {
+                            
+                            MintAnnotation *annoation = nil;
+                            if (value){
+                                annoation = [self annotationForId:value];
+                            }
+                            
+                            if (annoation){
+                                NSString *replaceTo = [NSString stringWithFormat:@"<u %@=%@>%@</u>",
+                                                       tagIdKey,
+                                                       annoation.usr_id,
+                                                       annoation.usr_name];
+                                [workingStr replaceCharactersInRange:range withString:replaceTo];
+                                
+                            }
+                            
+                        }];
+    
+    return workingStr.string;
+    
+}
+
+- (void) clearAllAttributedStrings
+{
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    [attributedString removeAttribute: keyModelId range: NSMakeRange(0, self.text.length)];
+    [self.annotationList removeAllObjects];
+    [self setNeedsDisplay];
+    NSLog(@"cleared attributes!");
+}
+
+
+- (void)clearAll
+{
+    [self clearAllAttributedStrings];
+    self.attributedText = [[NSAttributedString alloc]initWithString:@"" attributes:[self defaultAttributedString]];
+}
 @end

@@ -61,6 +61,15 @@
 
 }
 
+- (IBAction)getStringTag:(id)sender {
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"value"
+                                                    message:[self.annotationView makeStringWithTagAndTagIdKey:@"uid"]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"aaa"
+                                          otherButtonTitles:@"bbb", nil];
+    [alert show];
+}
 
 #pragma mark - UITextViewDelegate (Required)
 

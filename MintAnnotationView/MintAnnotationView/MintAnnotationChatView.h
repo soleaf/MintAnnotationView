@@ -45,4 +45,16 @@
  */
 - (BOOL) shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
 
+/*
+ Make string with tag information
+ ex ) hi <u id="1">Sally</u> good morning.
+ tagIdKey = id
+ */
+- (NSString*) makeStringWithTagAndTagIdKey:(NSString*)tagIdKey;
+
+/*
+ remove text and attributes and annotationList
+ */
+- (void) clearAll;
+
 @end
