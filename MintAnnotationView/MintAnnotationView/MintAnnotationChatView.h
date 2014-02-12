@@ -24,12 +24,6 @@
 //              MintAnnotationInfoName = Appeared name in view.
 - (void) addAnnotation:(MintAnnotation*)annoatin;
 
-/*
- SetAttributedText
- With taggedText like "<u uid=22>Sally</u> hello sally?!"
- , This appeared "hello sally?!" include annoatation informations.(annoationList)
- */
-- (void) setAttributedText:(NSString*)text withIdKey:(NSString*)idKey;
 
 // Should Use on textViewDelegate on viewController
 /* EX)
@@ -39,7 +33,7 @@
         
     }
  */
-- (NSString *)setTextWithTageedString:(NSString *)memo;
+- (NSString *)setTextWithTagedString:(NSString *)memo;
 
 
 // Should Use on textViewDelegate on viewController
@@ -49,7 +43,7 @@
         [self.annotationView checkTagDeleting];
      }
  */
--(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
+-(BOOL)shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
 
 
 /*

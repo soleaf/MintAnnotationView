@@ -33,8 +33,8 @@
     self.annotationView.nameTagImage = [[UIImage imageNamed:@"tagImage"] stretchableImageWithLeftCapWidth:4 topCapHeight:4];
     self.annotationView.nameTagColor = [UIColor colorWithRed:0.00 green:0.54 blue:0.50 alpha:1.0];
     
-//    NSString *textWIthTag = @"hello <u uid=112>tester</u>:what are you doing <u uid=222>tes22ter</u>:what are you doing";
-//    [self.annotationView setTextWithTageedString:textWIthTag];
+    NSString *textWIthTag = @"hello <u uid=112>tester</u>:what are you doing <u uid=222>tes22ter</u>:what are you doing";
+    [self.annotationView setTextWithTagedString:textWIthTag];
 }
 
 - (IBAction)annotateMary:(id)sender {
@@ -86,7 +86,7 @@
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
     // Checking User trying to edit MintAnnotationView's annoatation
-    return [self.annotationView textView:textView shouldChangeTextInRange:range replacementText:text];
+    return [self.annotationView shouldChangeTextInRange:range replacementText:text];
     
 }
 
