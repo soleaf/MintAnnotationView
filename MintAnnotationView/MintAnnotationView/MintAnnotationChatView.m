@@ -53,17 +53,17 @@ static NSString* const keyModelId = @"mintACV_id";
     // 3. Find and draw
     
     [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length)
-    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
-        
-        if ([self annotationForId:value]){
-            NSLog(@"%d, %d",range.location, range.length);
-            CFRange cfRange = CFRangeMake(range.location, range.length);
-            [self calculatingTagRectAndDraw:cfRange];
-            
-            
-        }
-
-    }];
+                                    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                        
+                                        if ([self annotationForId:value]){
+                                            NSLog(@"%d, %d",range.location, range.length);
+                                            CFRange cfRange = CFRangeMake(range.location, range.length);
+                                            [self calculatingTagRectAndDraw:cfRange];
+                                            
+                                            
+                                        }
+                                        
+                                    }];
     
 }
 
@@ -77,7 +77,7 @@ static NSString* const keyModelId = @"mintACV_id";
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     UITextView *textView = self;
-
+    
     // 4) Find rect
     CFRange stringRange = annoationStringRange;
     UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:stringRange.location];
@@ -176,7 +176,7 @@ static NSString* const keyModelId = @"mintACV_id";
     [tagButton setTitle:nameText forState:UIControlStateNormal];
     [tagButton setTitleColor:self.nameTagColor forState:UIControlStateNormal];
     tagButton.titleLabel.font = [UIFont systemFontOfSize:self.font.pointSize-4];
-
+    
     if (!tagViews)
         tagViews = [[NSMutableArray alloc] init];
     
@@ -184,24 +184,24 @@ static NSString* const keyModelId = @"mintACV_id";
     [self addSubview:tagButton];
     
     
-//    UIImageView *tagImage = [[UIImageView alloc]
-//                             tagImage.image = self.nameTagImage;
-//    [self addSubview:tagImage];
-//    
-//    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
-//    tagLabel.textColor = _nameTagColor;
-//    tagLabel.text = nameText;
-//    tagLabel.backgroundColor = [UIColor clearColor];
-//    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-4];
-//    tagLabel.textAlignment = NSTextAlignmentCenter;
-//    tagLabel.minimumScaleFactor = .2;
-//    [self addSubview:tagLabel];
+    //    UIImageView *tagImage = [[UIImageView alloc]
+    //                             tagImage.image = self.nameTagImage;
+    //    [self addSubview:tagImage];
+    //
+    //    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
+    //    tagLabel.textColor = _nameTagColor;
+    //    tagLabel.text = nameText;
+    //    tagLabel.backgroundColor = [UIColor clearColor];
+    //    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-4];
+    //    tagLabel.textAlignment = NSTextAlignmentCenter;
+    //    tagLabel.minimumScaleFactor = .2;
+    //    [self addSubview:tagLabel];
     
-//    if (!tagViews)
-//        tagViews = [[NSMutableArray alloc] init];
+    //    if (!tagViews)
+    //        tagViews = [[NSMutableArray alloc] init];
     
-//    [tagViews addObject:tagImage];
-//    [tagViews addObject:tagLabel];
+    //    [tagViews addObject:tagImage];
+    //    [tagViews addObject:tagLabel];
 }
 
 
@@ -223,23 +223,26 @@ static NSString* const keyModelId = @"mintACV_id";
     // Add
     if (!self.annotationList) self.annotationList = [[NSMutableArray alloc] init];
     [self.annotationList addObject:newAnnoation];
-
+    
     // Insert Plain user name text
     NSMutableDictionary *attr = [[NSMutableDictionary alloc] initWithDictionary:[self defaultAttributedString]];
     [attr setObject:newAnnoation.usr_id forKey:keyModelId];
     NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc]
                                              initWithString:[NSString stringWithFormat:@"%@", newAnnoation.usr_name]
                                              attributes:attr];
-
+    
     NSMutableAttributedString *spaceStringPefix = nil;
     NSString *tempCommentWriting = self.text;
+    
+    NSLog(@"nameString:%@",nameString);
 
     
     NSInteger cursor = self.selectedRange.location;
     // display name
     
     // Add Last
-    if (cursor == self.attributedText.length)
+    NSLog(@"self.attributedText.string.length:%d",self.attributedText.string.length);
+    if (cursor >= self.attributedText.string.length-1)
     {
         // Add Space
         if (tempCommentWriting.length > 0){
@@ -260,8 +263,11 @@ static NSString* const keyModelId = @"mintACV_id";
                                                                                        attributes:[self defaultAttributedString]];
         [conts appendAttributedString:afterBlank];
         
+        NSLog(@"conts:%@",conts);
+        
         self.attributedText = conts;
-
+        NSLog(@"\n\nself.attributedText:%@",self.attributedText);
+        
     }
     // Insert in text
     else
@@ -308,13 +314,107 @@ static NSString* const keyModelId = @"mintACV_id";
 }
 
 
+- (NSString *)setTextWithTageedString:(NSString *)memo
+{
+    
+    
+    NSMutableAttributedString *parsingMemo = [[NSMutableAttributedString alloc] initWithString:memo];
+    [parsingMemo setAttributes:[self defaultAttributedString] range:NSMakeRange(0, parsingMemo.length)];
+    
+    NSLog(@"memo:%@",parsingMemo);
+    
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression
+                                  regularExpressionWithPattern:@"<u uid=[^>]*>[^>]*<\\/u>"
+                                  options:0
+                                  error:&error];
+    
+    if (error){
+        NSLog(@"error:%@",error.description);
+        return nil;
+    }
+    
+    [regex enumerateMatchesInString:parsingMemo.string options:0 range:NSMakeRange(0, [parsingMemo length])
+                         usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop){
+                             
+                             // detect
+                             // <u uid=?>?</u>
+                             NSRange range = [match rangeAtIndex:0];
+                             NSString *insideString = [parsingMemo.string substringWithRange:range];
+                             
+                             // Name
+                             NSRegularExpression *regexUsrName = [NSRegularExpression
+                                                                  regularExpressionWithPattern:@">[가-힣a-zA-Z0-9]*<"
+                                                                  options:0
+                                                                  error:nil];
+                             NSRange usrNameRange = [regexUsrName rangeOfFirstMatchInString:insideString
+                                                                                    options:0
+                                                                                      range:NSMakeRange(0, insideString.length)];
+                             
+                             if (usrNameRange.location != NSNotFound)
+                             {
+                                 NSString *userName = [insideString substringWithRange:usrNameRange];
+                                 userName = [userName stringByReplacingOccurrencesOfString:@">" withString:@""];
+                                 userName = [userName stringByReplacingOccurrencesOfString:@"<" withString:@""];
+                                 NSLog(@"userName:%@",userName);
+                                 
+                                 // ID
+                                 NSRegularExpression *regexUsrID = [NSRegularExpression
+                                                                    regularExpressionWithPattern:@"uid=[^>]*"
+                                                                    options:0
+                                                                    error:nil];
+                                 NSRange usrIDRange = [regexUsrID rangeOfFirstMatchInString:insideString
+                                                                                    options:0
+                                                                                      range:NSMakeRange(0, insideString.length)];
+                                 NSString *userID = [insideString substringWithRange:usrIDRange];
+                                 userID = [userID stringByReplacingOccurrencesOfString:@"uid=" withString:@""];
+                                 userID = [userID stringByReplacingOccurrencesOfString:@"\"" withString:@""];
+                                 NSLog(@"userID:%@",userID);
+                                 
+                                 if (userID && userName)
+                                 {
+                                     MintAnnotation *annotation = [[MintAnnotation alloc] init];
+                                     annotation.usr_id = userID;
+                                     annotation.usr_name = userName;
+                                     
+                                     if (!self.annotationList) self.annotationList = [[NSMutableArray alloc] init];
+                                     
+                                     [self.annotationList addObject:annotation];
+                                     
+                                     NSRange userNameStringRange = NSMakeRange(range.location + usrNameRange.location+1, usrNameRange.length-2);
+                                     NSLog(@"nameRange:%d,%d",userNameStringRange.location,userNameStringRange.length);
+                                     [parsingMemo addAttribute:keyModelId value:userID range:userNameStringRange];
+                                 }
+                                 
+                                 
+                             }
+                             
+                         }];
+    
+    
+    NSRange r;
+    
+    while ((r = [[parsingMemo mutableString] rangeOfString:@"<[^>]+>" options:NSRegularExpressionSearch]).location != NSNotFound) {
+        
+        [[parsingMemo mutableString] replaceCharactersInRange:r withString:@""];
+    }
+    
+    self.attributedText = parsingMemo;
+    [self setNeedsDisplay];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(textViewDidChange:)])
+        [self.delegate textViewDidChange:self];
+    
+    
+    return self.attributedText.string;
+}
 
 #pragma mark - UITextviewDelegate
 
 - (void)textViewDidChange:(UITextView *)textView
 {
     [self setNeedsDisplay];
-
+    
     // length = 0, but attributed have id
     if (self.attributedText.string.length == 0)
     {
@@ -329,6 +429,14 @@ static NSString* const keyModelId = @"mintACV_id";
 {
     
     __block BOOL result = YES;
+    
+    // ALl clear
+    if (editingRange.location == 0 && editingRange.length == self.attributedText.string.length)
+    {
+        NSLog(@"<<<<<< --- all cleared by keyboard");
+        [self clearAll];
+        return YES;
+    }
     
     // Checking Trying to insert within tag
     if (text.length > 0)
@@ -354,7 +462,7 @@ static NSString* const keyModelId = @"mintACV_id";
                 NSLog(@"<<<<< -------------3");
             }
         }
-    
+        
         
         [self.attributedText enumerateAttributesInRange:rangeOfCheckingEditingInTag options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
             
@@ -373,8 +481,11 @@ static NSString* const keyModelId = @"mintACV_id";
     else
     {
         editingRange.location-=1;
-        if (editingRange.location == -1) {
+        if (editingRange.location == -1)
             editingRange.location = 0;
+        
+        if (editingRange.length == 0)
+        {
             NSLog(@"location >>>> 0");
             
             if (self.attributedText.length == 0)
@@ -406,7 +517,7 @@ static NSString* const keyModelId = @"mintACV_id";
         }];
         
         return YES;
-
+        
     }
     
 }
@@ -429,7 +540,7 @@ static NSString* const keyModelId = @"mintACV_id";
     
     
     // Cutting Tail
-
+    
     NSAttributedString *tail = nil;
     if (cuttingRange.location + cuttingRange.length <= self.attributedText.string.length)
         tail = [self.attributedText attributedSubstringFromRange:NSMakeRange(cuttingRange.location + cuttingRange.length,
@@ -502,9 +613,9 @@ static NSString* const keyModelId = @"mintACV_id";
     return NO;
 }
 
-- (NSString*) makeStringWithTagAndTagIdKey:(NSString*)tagIdKey
+- (NSString*) makeStringWithTag
 {
-
+    
     NSMutableAttributedString *workingStr = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
     
     // Finding Replace ranges and annoations
@@ -517,8 +628,7 @@ static NSString* const keyModelId = @"mintACV_id";
                             }
                             
                             if (annoation){
-                                NSString *replaceTo = [NSString stringWithFormat:@"<u %@=%@>%@</u>",
-                                                       tagIdKey,
+                                NSString *replaceTo = [NSString stringWithFormat:@"<u uid=%@>%@</u>",
                                                        annoation.usr_id,
                                                        annoation.usr_name];
                                 [workingStr replaceCharactersInRange:range withString:replaceTo];
@@ -545,5 +655,6 @@ static NSString* const keyModelId = @"mintACV_id";
 {
     [self clearAllAttributedStrings];
     self.attributedText = [[NSAttributedString alloc]initWithString:@"" attributes:[self defaultAttributedString]];
+    [self setNeedsDisplay];
 }
 @end
