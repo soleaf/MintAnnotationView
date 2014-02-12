@@ -49,7 +49,7 @@
         [self.annotationView checkTagDeleting];
      }
  */
-- (BOOL) shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
+-(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text;
 
 
 /*

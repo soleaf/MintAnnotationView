@@ -86,7 +86,7 @@
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
     // Checking User trying to edit MintAnnotationView's annoatation
-    return [self.annotationView shouldChangeTextInRange:range replacementText:text];
+    return [self.annotationView textView:textView shouldChangeTextInRange:range replacementText:text];
     
 }
 

@@ -26,7 +26,6 @@
 		E6F2734C17CB458D00D29E11 /* WriteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E6F2734A17CB458D00D29E11 /* WriteViewController.xib */; };
 		E6F2734E17CB505B00D29E11 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E6F2734D17CB505B00D29E11 /* README.md */; };
 		F72A683718A8986800C2FFE1 /* MintAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = F72A683618A8986800C2FFE1 /* MintAnnotation.m */; };
-		F72D2EC818AB102100B4B964 /* MintAttrColor.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D2EC718AB102100B4B964 /* MintAttrColor.m */; };
 		F7C5CD0E18765F68009270BB /* tagImage.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C5CD0C18765F68009270BB /* tagImage.png */; };
 		F7C5CD0F18765F68009270BB /* tagImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7C5CD0D18765F68009270BB /* tagImage@2x.png */; };
 /* End PBXBuildFile section */
@@ -63,8 +62,6 @@
 		F72A681B18A87A7D00C2FFE1 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		F72A683518A8986800C2FFE1 /* MintAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MintAnnotation.h; sourceTree = "<group>"; };
 		F72A683618A8986800C2FFE1 /* MintAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MintAnnotation.m; sourceTree = "<group>"; };
-		F72D2EC618AB102100B4B964 /* MintAttrColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MintAttrColor.h; sourceTree = "<group>"; };
-		F72D2EC718AB102100B4B964 /* MintAttrColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MintAttrColor.m; sourceTree = "<group>"; };
 		F7C5CD0C18765F68009270BB /* tagImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tagImage.png; sourceTree = "<group>"; };
 		F7C5CD0D18765F68009270BB /* tagImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "tagImage@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,8 +156,6 @@
 				E6F2733E17CB3B5D00D29E11 /* MintAnnotationChatView.m */,
 				E6F2734017CB439600D29E11 /* MintAnnotationMemoView.h */,
 				E6F2734117CB439600D29E11 /* MintAnnotationMemoView.m */,
-				F72D2EC618AB102100B4B964 /* MintAttrColor.h */,
-				F72D2EC718AB102100B4B964 /* MintAttrColor.m */,
 			);
 			name = MintAnnotationView;
 			path = MintAnnotationView/MintAnnotationView;
@@ -243,7 +238,6 @@
 				E6F2733F17CB3B5D00D29E11 /* MintAnnotationChatView.m in Sources */,
 				E6F2734217CB439600D29E11 /* MintAnnotationMemoView.m in Sources */,
 				E6F2734617CB449B00D29E11 /* CommentListViewController.m in Sources */,
-				F72D2EC818AB102100B4B964 /* MintAttrColor.m in Sources */,
 				F72A683718A8986800C2FFE1 /* MintAnnotation.m in Sources */,
 				E6F2734B17CB458D00D29E11 /* WriteViewController.m in Sources */,
 			);

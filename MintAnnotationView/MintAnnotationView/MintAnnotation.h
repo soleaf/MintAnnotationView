@@ -12,5 +12,6 @@
 
 @property NSString *usr_id;
 @property NSString *usr_name;
+@property NSRange range;
 
 @end

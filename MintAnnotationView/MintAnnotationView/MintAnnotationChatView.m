@@ -17,9 +17,17 @@ static NSString* const keyModelId = @"mintACV_id";
 {
     BOOL isModified;
     NSMutableArray *tagViews;
+    NSString* beforeText;
 }
 
 @end
+
+enum editType {
+    editTypeInserting = 1,
+    editTypeDeleting = 2,
+    editTypeModifying = 3
+};
+typedef NSInteger EditType;
 
 @implementation MintAnnotationChatView
 
@@ -50,24 +58,15 @@ static NSString* const keyModelId = @"mintACV_id";
     
     if (self.annotationList == nil || self.attributedText.length  < 1) return;
     
-    // 3. Find and draw
-    
-    [self.attributedText enumerateAttribute:keyModelId inRange:NSMakeRange(0, self.attributedText.length)
-                                    options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
-                                        
-                                        if ([self annotationForId:value]){
-                                            NSLog(@"%d, %d",range.location, range.length);
-                                            CFRange cfRange = CFRangeMake(range.location, range.length);
-                                            [self calculatingTagRectAndDraw:cfRange];
-                                            
-                                            
-                                        }
-                                        
-                                    }];
+    for (MintAnnotation *annoation in self.annotationList) {
+        
+        [self calculatingTagRectAndDraw:annoation.range];
+        
+    }
     
 }
 
-- (void) calculatingTagRectAndDraw:(CFRange) annoationStringRange
+- (void) calculatingTagRectAndDraw:(NSRange) annoationStringRange
 {
     /*
      Caclulating Rect and Draw
@@ -79,7 +78,7 @@ static NSString* const keyModelId = @"mintACV_id";
     UITextView *textView = self;
     
     // 4) Find rect
-    CFRange stringRange = annoationStringRange;
+    NSRange stringRange = annoationStringRange;
     UITextPosition *begin = [textView positionFromPosition:textView.beginningOfDocument offset:stringRange.location];
     UITextPosition *end = [textView positionFromPosition:begin offset:stringRange.length];
     UITextRange *textRange = [textView textRangeFromPosition:begin toPosition:end];
@@ -210,6 +209,7 @@ static NSString* const keyModelId = @"mintACV_id";
 // --- NEW ---
 - (void)addAnnotation:(MintAnnotation *)newAnnoation
 {
+
     // Check aleady imported
     for (MintAnnotation *annotation in self.annotationList) {
         
@@ -225,55 +225,52 @@ static NSString* const keyModelId = @"mintACV_id";
     [self.annotationList addObject:newAnnoation];
     
     // Insert Plain user name text
-    NSMutableDictionary *attr = [[NSMutableDictionary alloc] initWithDictionary:[self defaultAttributedString]];
-    [attr setObject:newAnnoation.usr_id forKey:keyModelId];
-    NSMutableAttributedString *nameString = [[NSMutableAttributedString alloc]
-                                             initWithString:[NSString stringWithFormat:@"%@", newAnnoation.usr_name]
-                                             attributes:attr];
-    
-    NSMutableAttributedString *spaceStringPefix = nil;
-    NSString *tempCommentWriting = self.text;
-    
-    NSLog(@"nameString:%@",nameString);
-
-    
+//    
+//    NSMutableAttributedString *spaceStringPefix = nil;
+//    NSString *tempCommentWriting = self.text;
+//    
     NSInteger cursor = self.selectedRange.location;
+    if (cursor == NSNotFound) cursor = self.text.length;
+    newAnnoation.range = NSMakeRange(cursor+1, newAnnoation.usr_name.length);
+    
+    NSLog(@"newAnnoation.range:%d,%d",newAnnoation.range.location, newAnnoation.range.length);
+    self.text = [NSString stringWithFormat:@"%@ %@",self.text, newAnnoation.usr_name];
     // display name
     
     // Add Last
-    NSLog(@"self.attributedText.string.length:%d",self.attributedText.string.length);
-    if (cursor >= self.attributedText.string.length-1)
-    {
-        // Add Space
-        if (tempCommentWriting.length > 0){
-            
-            NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
-            
-            if (![prevString isEqualToString:@"\n"])
-            {
-                spaceStringPefix = [[NSMutableAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]];
-            }
-        }
-        
-        NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
-        if (spaceStringPefix)
-            [conts appendAttributedString:spaceStringPefix];
-        [conts appendAttributedString:nameString];
-        NSMutableAttributedString *afterBlank = [[NSMutableAttributedString alloc] initWithString:@" "
-                                                                                       attributes:[self defaultAttributedString]];
-        [conts appendAttributedString:afterBlank];
-        
-        NSLog(@"conts:%@",conts);
-        
-        self.attributedText = conts;
-        NSLog(@"\n\nself.attributedText:%@",self.attributedText);
-        
-    }
-    // Insert in text
-    else
-    {
-        self.attributedText = [self attributedStringInsertString:nameString at:cursor];
-    }
+//    NSLog(@"self.attributedText.string.length:%d",self.attributedText.string.length);
+//    if (cursor >= self.attributedText.string.length-1)
+//    {
+//        // Add Space
+//        if (tempCommentWriting.length > 0){
+//            
+//            NSString *prevString = [tempCommentWriting substringFromIndex:tempCommentWriting.length-1];
+//            
+//            if (![prevString isEqualToString:@"\n"])
+//            {
+//                spaceStringPefix = [[NSMutableAttributedString alloc] initWithString:@" " attributes:[self defaultAttributedString]];
+//            }
+//        }
+//        
+//        NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+//        if (spaceStringPefix)
+//            [conts appendAttributedString:spaceStringPefix];
+//        [conts appendAttributedString:nameString];
+//        NSMutableAttributedString *afterBlank = [[NSMutableAttributedString alloc] initWithString:@" "
+//                                                                                       attributes:[self defaultAttributedString]];
+//        [conts appendAttributedString:afterBlank];
+//        
+//        NSLog(@"conts:%@",conts);
+//        
+//        self.attributedText = conts;
+//        NSLog(@"\n\nself.attributedText:%@",self.attributedText);
+//        
+//    }
+//    // Insert in text
+//    else
+//    {
+//        self.attributedText = [self attributedStringInsertString:nameString at:cursor];
+//    }
     
     
     [self setNeedsDisplay];
@@ -409,10 +406,13 @@ static NSString* const keyModelId = @"mintACV_id";
     return self.attributedText.string;
 }
 
+
+
 #pragma mark - UITextviewDelegate
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+    beforeText = self.text;
     [self setNeedsDisplay];
     
     // length = 0, but attributed have id
@@ -425,103 +425,202 @@ static NSString* const keyModelId = @"mintACV_id";
     
 }
 
-- (BOOL) shouldChangeTextInRange:(NSRange)editingRange replacementText:(NSString *)text
+-(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)editingRange replacementText:(NSString *)text
 {
+    NSLog(@"editingRange:%d,%d, text:%@",editingRange.location, editingRange.length, text);
     
-    __block BOOL result = YES;
+    // Dissable to edit seleted text
+    if (editingRange.length > 1) return NO;
     
-    // ALl clear
-    if (editingRange.location == 0 && editingRange.length == self.attributedText.string.length)
+    // Checking EditingType
+    NSInteger factorRLen = editingRange.length * 2;
+    NSInteger factorTLen = (text.length > 0 ? 1 : 0);
+    EditType editing = factorRLen + factorTLen;
+    
+    // Insert
+    if (editing == editTypeInserting)
     {
-        NSLog(@"<<<<<< --- all cleared by keyboard");
-        [self clearAll];
-        return YES;
-    }
-    
-    // Checking Trying to insert within tag
-    if (text.length > 0)
-    {
-        NSRange rangeOfCheckingEditingInTag = editingRange;
-        if (rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length <= self.attributedText.length)
+        
+
+//        NSLog(@"... i range %d,%d",editingRange.location, editingRange.length);
+        NSRange range = NSMakeRange(editingRange.location -1, self.text.length - editingRange.location+1);
+        
+        // tyring to insert in Tag
+        NSArray *annotationInList = [self annoationsInRange:NSMakeRange(editingRange.location, 1) allInclude:YES];
+        if (annotationInList.count > 0 && range.location != self.text.length-1)
+            return NO;
+        else
         {
-            rangeOfCheckingEditingInTag.length = 1;
-            rangeOfCheckingEditingInTag.location-=1;
             
-            NSLog(@"<<<<< ----------- 1");
+//            if (editingRange.location > 0)
+//            {
+//                NSString *fowardChar = [self.text substringWithRange:NSMakeRange(editingRange.location-=1, 1)];
+//                BOOL isfowardNotCompletedHangul = [fowardChar rangeOfString:@"[가-핳]" options:  NSRegularExpressionSearch].location == NSNotFound;
+//                BOOL isInsertingJaeum = [text rangeOfString:@"[ㅏ-ㅣ]" options:  NSRegularExpressionSearch].location != NSNotFound;
+//                
+//                // 미완성 한글
+//                if (!(isfowardNotCompletedHangul && isInsertingJaeum))
+//                    [self updateAnnoationInRange:range location:text.length enabledAutoFix:NO];
+//            }
+//            NSUInteger newLength = [self.text length] + [text length] - editingRange.length;
+//            NSLog(@"before %d",self.text.length);
+//            NSLog(@"new    %d",newLength);
+//            
+//            if (self.text.length < newLength)
+//            {
+                // 바로 전 문자가 미완성이고, 이번문가 모음이면 업데이트 넘기기
+            [self updateAnnoationInRange:range location:text.length enabledAutoFix:YES];
             
-            //
-            NSInteger totalLength = rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length;
-            if (totalLength > self.attributedText.length)
-            {
-                rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
-                NSLog(@"<<<<< ----------- 2");
-            }
-            else if (totalLength < 1)
-            {
-                rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
-                NSLog(@"<<<<< -------------3");
-            }
-        }
-        
-        
-        [self.attributedText enumerateAttributesInRange:rangeOfCheckingEditingInTag options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+//            }
+//            else
+//            {
+//            }
             
-            if ([attrs objectForKey:keyModelId] && [self annotationForId:[attrs objectForKey:keyModelId]])
-            {
-                NSLog(@"------- Editing In Tag");
-                result = NO;
-            }
+                
             
-        }];
-        
-        
-        return result;
-    }
-    // Deleting
-    else
-    {
-        editingRange.location-=1;
-        if (editingRange.location == -1)
-            editingRange.location = 0;
-        
-        if (editingRange.length == 0)
-        {
-            NSLog(@"location >>>> 0");
             
-            if (self.attributedText.length == 0)
-            {
-                [self clearAllAttributedStrings];
-            }
-            
-            return YES;
             
         }
-        NSLog(@"editingRange :%d, %d",editingRange.location, editingRange.length);
-        
-        [self.attributedText enumerateAttributesInRange:editingRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
-            
-            if ([attrs objectForKey:keyModelId] && [self annotationForId:[attrs objectForKey:keyModelId]])
-            {
-                
-                NSRange tagRange = [self findTagPosition:[self annotationForId:[attrs objectForKey:keyModelId]]];
-                
-                NSLog(@"Deleted annotation tag >>>>> id(%@):range(%d,%d)",[attrs objectForKey:keyModelId], tagRange.location, tagRange.length);
-                
-                self.attributedText = [self attributedStringWithCutOutOfRange:tagRange];
-                self.selectedRange = NSMakeRange(tagRange.location, 0);
-                
-                [self.annotationList removeObject:[self annotationForId:[attrs objectForKey:keyModelId]]];
-                [self setNeedsDisplay];
-            }
-            
-        }];
-        
-        return YES;
+    }
+    
+    // Delete
+    else if (editing == editTypeDeleting)
+    {
+        NSLog(@"... d range %d,%d",editingRange.location, editingRange.length);
+        NSRange range = NSMakeRange(editingRange.location, self.text.length - editingRange.location);
+    
+        // tyring to delete Tag
+        NSArray *annotationInList = [self annoationsInRange:NSMakeRange(editingRange.location-1, 1) allInclude:NO];
+        if (annotationInList.count > 0)
+        {
+            // Remove tag's all text and annoation
+            [self removeAnnoationAndTextInView:[annotationInList objectAtIndex:0]];
+        }
+        else
+        {
+            [self updateAnnoationInRange:range location:-1 enabledAutoFix:YES];
+        }
         
     }
+    
+    //Modifying
+    else if (editing == editTypeModifying)
+    {
+        // tyring to modify Tag
+    }
+    
+    return YES;
     
 }
 
+- (void) updateAnnoationInRange:(NSRange)editingRange location:(NSInteger)delta enabledAutoFix:(BOOL)autoFix
+{
+    
+//    NSLog(@"editingRange:%d,%d, deleta:%d",editingRange.location, editingRange.length, delta);
+    NSArray *annotationsInRange = [self annoationsInRange:editingRange allInclude:YES];
+    
+    for (MintAnnotation *annoation in annotationsInRange) {
+        
+        NSRange annRange = annoation.range;
+        annRange.location += delta;
+        annoation.range = annRange;
+        
+        if (autoFix)
+        {
+            // 해당 range와 일치 하지 않을 경우 +1/-1까지 범위를 지정해서 픽스
+            if (![[self.text substringWithRange:annoation.range] isEqualToString:annoation.usr_name])
+            {
+                
+                // -1
+                if (annoation.range.location > 0)
+                {
+                    if ([[self.text substringWithRange:NSMakeRange(annoation.range.location-1, annoation.range.length)]
+                         isEqualToString:annoation.usr_name])
+                    {
+                        NSLog(@"-1 픽싱");
+                        continue;
+                    }
+
+                }
+                // +1
+                if (annoation.range.location + annoation.range.length < self.text.length)
+                {
+                    if ([[self.text substringWithRange:NSMakeRange(annoation.range.location+1, annoation.range.length)]
+                         isEqualToString:annoation.usr_name])
+                    {
+                        NSLog(@"+1 픽싱");
+                        continue;
+                    }
+                }
+                
+            }
+            
+            
+        }
+        
+//        NSLog(@"annRange:%d,%d",annRange.location,annRange.length);
+        
+    }
+    
+    [self setNeedsDisplay];
+}
+
+- (void) removeAnnoationAndTextInView:(MintAnnotation*)annoation
+{
+    NSLog(@"deleting---");
+    
+    self.text = [self stringWithCutOutOfRange:annoation.range];
+    [self.annotationList removeObject:annoation];
+    [self setNeedsDisplay];
+}
+
+
+#pragma mark - Search Model
+- (BOOL) isAnnoation:(MintAnnotation*)annotaion InRange:(NSRange)range allInclude:(BOOL)allInclude
+{
+    
+    NSRange annRange = annotaion.range;
+    NSInteger annBegin = annRange.location;
+    NSInteger annEnd = annRange.location + annRange.length;
+    
+//    NSLog(@"range,%d,%d - annRange,%d,%d",range.location, range.length, annRange.location,annRange.length);
+    
+    NSInteger rBegin = range.location;
+    NSInteger rEnd = range.location + range.length;
+    
+    if (allInclude)
+        return (rBegin <= annBegin && rEnd >= annEnd);
+    else
+        return ((rBegin <= annBegin && rEnd >= annBegin) ||
+                (rBegin >= annBegin && rBegin <= annEnd));
+}
+
+- (NSArray *) annoationsInRange:(NSRange) range allInclude:(BOOL)allInclude
+{
+//    NSLog(@"in range:%d,%d",range.location, range.length);
+    
+    NSMutableArray *list = [[NSMutableArray alloc] init];
+    for (MintAnnotation *annoation in self.annotationList) {
+        
+        if ([self isAnnoation:annoation InRange:range allInclude:allInclude])
+        {
+            [list addObject:annoation];
+        }
+    }
+    
+    return list;
+}
+
+#pragma mark - NSStrings
+- (NSString *) stringWithCutOutOfRange:(NSRange)cuttingRange
+{
+    
+    NSLog(@"cuttingRange:%d,%d[%@]",cuttingRange.location,cuttingRange.length, self.text);
+    NSMutableString *string = [NSMutableString stringWithString:self.text];
+    [string replaceCharactersInRange:cuttingRange withString:@""];
+    
+    return string;
+}
 
 #pragma mark - AttributedStrings
 - (NSAttributedString *) attributedStringWithCutOutOfRange:(NSRange)cuttingRange
@@ -613,9 +712,11 @@ static NSString* const keyModelId = @"mintACV_id";
     return NO;
 }
 
+
 - (NSString*) makeStringWithTag
 {
     
+    //TODO: 새로
     NSMutableAttributedString *workingStr = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
     
     // Finding Replace ranges and annoations
