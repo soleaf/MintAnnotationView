@@ -61,6 +61,13 @@
 
 
 /*
+ Make s tring without tag strign
+ ex ) hi good mornig.  (removed 'Sally' annotation tag text)
+ */
+- (NSString*) makeStringWithoutTagString;
+
+
+/*
  remove text and attributes and annotationList
  */
 - (void) clearAll;

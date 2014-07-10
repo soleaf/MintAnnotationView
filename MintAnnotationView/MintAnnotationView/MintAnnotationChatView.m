@@ -644,6 +644,31 @@ static NSString* const keyModelId = @"mintACV_id";
     
 }
 
+- (NSString*) makeStringWithoutTagString
+{
+    
+    NSMutableAttributedString *workingStr = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
+    
+    // Finding Replace ranges and annoations
+    [workingStr enumerateAttribute:keyModelId inRange:NSMakeRange(0, workingStr.string.length) options:0
+                        usingBlock:^(id value, NSRange range, BOOL *stop) {
+                            
+                            MintAnnotation *annoation = nil;
+                            if (value){
+                                annoation = [self annotationForId:value];
+                            }
+                            
+                            if (annoation){
+                                [workingStr replaceCharactersInRange:range withString:@""];
+                                
+                            }
+                            
+                        }];
+    
+    return workingStr.string;
+    
+}
+
 - (void) clearAllAttributedStrings
 {
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithAttributedString:self.attributedText];
