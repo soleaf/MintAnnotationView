@@ -25,19 +25,8 @@
 - (void) addAnnotation:(MintAnnotation*)annoatin;
 
 /*
- SetAttributedText
  With taggedText like "<u uid=22>Sally</u> hello sally?!"
  , This appeared "hello sally?!" include annoatation informations.(annoationList)
- */
-- (void) setAttributedText:(NSString*)text withIdKey:(NSString*)idKey;
-
-// Should Use on textViewDelegate on viewController
-/* EX)
-    - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-    {
-        return [self.annotationView checkingEditingTag:textView andRange:range];
-        
-    }
  */
 - (NSString *)setTextWithTageedString:(NSString *)memo;
 
