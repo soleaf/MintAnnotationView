@@ -32,8 +32,8 @@ Clone or Download and show projct. It's very simple.
 MintAnnotationChatView
 ====
 
-1. If you use xib, Put UITextView on view and set class 'MintAnnotationChatView' else make 'MintAnnotationChatView' object and addSubView.
-2. SetDelegate
+1) If you use xib, Put UITextView on view and set class 'MintAnnotationChatView' else make 'MintAnnotationChatView' object and addSubView.
+2) SetDelegate
 
 ```objective-c
 - (void)textViewDidChange:(UITextView *)textView
@@ -51,7 +51,7 @@ MintAnnotationChatView
 }
 ```
 
-3. Add Event anywhere(Ex. UserNameButtons) Make info dictionary include annotation info. And `annotation:`
+3) Add Event anywhere(Ex. UserNameButtons) Make info dictionary include annotation info. And `annotation:`
 
 ```objective-c
 NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
@@ -61,13 +61,13 @@ NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
 [self.annotationView annotation:info];
 ```
 
-4. Getting annotation User List. Use it to post server.
+4) Getting annotation User List. Use it to post server.
 
 ```objective-c
 self.annotationView.annotationList;
 ```
 
-5. Or Get Annoation tagged string.
+5) Or Get Annoation tagged string.
 
 ```objective-c
 [self.annotationView makeStringWithTag];
