@@ -56,7 +56,7 @@ static NSString* const keyModelId = @"mintACV_id";
                                     options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
                                         
                                         if ([self annotationForId:value]){
-                                            NSLog(@"%d, %d",range.location, range.length);
+//                                            NSLog(@"%d, %d",range.location, range.length);
                                             CFRange cfRange = CFRangeMake(range.location, range.length);
                                             [self calculatingTagRectAndDraw:cfRange];
                                             
@@ -215,7 +215,7 @@ static NSString* const keyModelId = @"mintACV_id";
         
         if ([annotation.usr_id isEqualToString:newAnnoation.usr_id])
         {
-            NSLog(@"MintAnnoationChatView >> addAnoation >> id'%@'is aleady in", newAnnoation.usr_id);
+//            NSLog(@"MintAnnoationChatView >> addAnoation >> id'%@'is aleady in", newAnnoation.usr_id);
             return;
         }
     }
@@ -234,14 +234,14 @@ static NSString* const keyModelId = @"mintACV_id";
     NSMutableAttributedString *spaceStringPefix = nil;
     NSString *tempCommentWriting = self.text;
     
-    NSLog(@"nameString:%@",nameString);
+//    NSLog(@"nameString:%@",nameString);
 
     
     NSInteger cursor = self.selectedRange.location;
     // display name
     
     // Add Last
-    NSLog(@"self.attributedText.string.length:%d",self.attributedText.string.length);
+//    NSLog(@"self.attributedText.string.length:%d",self.attributedText.string.length);
     if (cursor >= self.attributedText.string.length-1)
     {
         // Add Space
@@ -263,10 +263,10 @@ static NSString* const keyModelId = @"mintACV_id";
                                                                                        attributes:[self defaultAttributedString]];
         [conts appendAttributedString:afterBlank];
         
-        NSLog(@"conts:%@",conts);
+//        NSLog(@"conts:%@",conts);
         
         self.attributedText = conts;
-        NSLog(@"\n\nself.attributedText:%@",self.attributedText);
+//        NSLog(@"\n\nself.attributedText:%@",self.attributedText);
         
     }
     // Insert in text
@@ -321,7 +321,7 @@ static NSString* const keyModelId = @"mintACV_id";
     NSMutableAttributedString *parsingMemo = [[NSMutableAttributedString alloc] initWithString:memo];
     [parsingMemo setAttributes:[self defaultAttributedString] range:NSMakeRange(0, parsingMemo.length)];
     
-    NSLog(@"memo:%@",parsingMemo);
+//    NSLog(@"memo:%@",parsingMemo);
     
     NSError *error = nil;
     NSRegularExpression *regex = [NSRegularExpression
@@ -330,7 +330,7 @@ static NSString* const keyModelId = @"mintACV_id";
                                   error:&error];
     
     if (error){
-        NSLog(@"error:%@",error.description);
+//        NSLog(@"error:%@",error.description);
         return nil;
     }
     
@@ -356,7 +356,7 @@ static NSString* const keyModelId = @"mintACV_id";
                                  NSString *userName = [insideString substringWithRange:usrNameRange];
                                  userName = [userName stringByReplacingOccurrencesOfString:@">" withString:@""];
                                  userName = [userName stringByReplacingOccurrencesOfString:@"<" withString:@""];
-                                 NSLog(@"userName:%@",userName);
+//                                 NSLog(@"userName:%@",userName);
                                  
                                  // ID
                                  NSRegularExpression *regexUsrID = [NSRegularExpression
@@ -369,7 +369,7 @@ static NSString* const keyModelId = @"mintACV_id";
                                  NSString *userID = [insideString substringWithRange:usrIDRange];
                                  userID = [userID stringByReplacingOccurrencesOfString:@"uid=" withString:@""];
                                  userID = [userID stringByReplacingOccurrencesOfString:@"\"" withString:@""];
-                                 NSLog(@"userID:%@",userID);
+//                                 NSLog(@"userID:%@",userID);
                                  
                                  if (userID && userName)
                                  {
@@ -382,7 +382,7 @@ static NSString* const keyModelId = @"mintACV_id";
                                      [self.annotationList addObject:annotation];
                                      
                                      NSRange userNameStringRange = NSMakeRange(range.location + usrNameRange.location+1, usrNameRange.length-2);
-                                     NSLog(@"nameRange:%d,%d",userNameStringRange.location,userNameStringRange.length);
+//                                     NSLog(@"nameRange:%d,%d",userNameStringRange.location,userNameStringRange.length);
                                      [parsingMemo addAttribute:keyModelId value:userID range:userNameStringRange];
                                  }
                                  
@@ -433,7 +433,7 @@ static NSString* const keyModelId = @"mintACV_id";
     // ALl clear
     if (editingRange.location == 0 && editingRange.length == self.attributedText.string.length)
     {
-        NSLog(@"<<<<<< --- all cleared by keyboard");
+//        NSLog(@"<<<<<< --- all cleared by keyboard");
         [self clearAll];
         return YES;
     }
@@ -447,19 +447,19 @@ static NSString* const keyModelId = @"mintACV_id";
             rangeOfCheckingEditingInTag.length = 1;
             rangeOfCheckingEditingInTag.location-=1;
             
-            NSLog(@"<<<<< ----------- 1");
+//            NSLog(@"<<<<< ----------- 1");
             
             //
             NSInteger totalLength = rangeOfCheckingEditingInTag.location + rangeOfCheckingEditingInTag.length;
             if (totalLength > self.attributedText.length)
             {
                 rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
-                NSLog(@"<<<<< ----------- 2");
+//                NSLog(@"<<<<< ----------- 2");
             }
             else if (totalLength < 1)
             {
                 rangeOfCheckingEditingInTag = NSMakeRange(0, 0);
-                NSLog(@"<<<<< -------------3");
+//                NSLog(@"<<<<< -------------3");
             }
         }
         
@@ -486,7 +486,7 @@ static NSString* const keyModelId = @"mintACV_id";
         
         if (editingRange.length == 0)
         {
-            NSLog(@"location >>>> 0");
+//            NSLog(@"location >>>> 0");
             
             if (self.attributedText.length == 0)
             {
@@ -496,7 +496,7 @@ static NSString* const keyModelId = @"mintACV_id";
             return YES;
             
         }
-        NSLog(@"editingRange :%d, %d",editingRange.location, editingRange.length);
+//        NSLog(@"editingRange :%d, %d",editingRange.location, editingRange.length);
         
         [self.attributedText enumerateAttributesInRange:editingRange options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
             
@@ -505,7 +505,7 @@ static NSString* const keyModelId = @"mintACV_id";
                 
                 NSRange tagRange = [self findTagPosition:[self annotationForId:[attrs objectForKey:keyModelId]]];
                 
-                NSLog(@"Deleted annotation tag >>>>> id(%@):range(%d,%d)",[attrs objectForKey:keyModelId], tagRange.location, tagRange.length);
+//                NSLog(@"Deleted annotation tag >>>>> id(%@):range(%d,%d)",[attrs objectForKey:keyModelId], tagRange.location, tagRange.length);
                 
                 self.attributedText = [self attributedStringWithCutOutOfRange:tagRange];
                 self.selectedRange = NSMakeRange(tagRange.location, 0);
@@ -675,7 +675,7 @@ static NSString* const keyModelId = @"mintACV_id";
     [attributedString removeAttribute: keyModelId range: NSMakeRange(0, self.text.length)];
     [self.annotationList removeAllObjects];
     [self setNeedsDisplay];
-    NSLog(@"cleared attributes!");
+//    NSLog(@"cleared attributes!");
 }
 
 
