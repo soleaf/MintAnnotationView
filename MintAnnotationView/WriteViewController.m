@@ -25,6 +25,10 @@
 
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
+    
+    self.title = @"ChatView";
+    
     // Required
     // MintAnnotationChatView
     self.annotationView.delegate = self;
@@ -64,15 +68,22 @@
 
 }
 
-- (IBAction)getStringTag:(id)sender {
-    
+- (IBAction)getStringWithAnnotation:(id)sender {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"value"
                                                     message:[self.annotationView makeStringWithTag]
                                                    delegate:nil
-                                          cancelButtonTitle:@"aaa"
-                                          otherButtonTitles:@"bbb", nil];
+                                          cancelButtonTitle:@"Cacnel" otherButtonTitles:@"OK", nil];
     [alert show];
 }
+
+- (IBAction)getPlainString:(id)sender {
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"value"
+                                                    message:[self.annotationView makeStringWithoutTagString]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Cacnel" otherButtonTitles:@"OK", nil];
+    [alert show];
+}
+
 
 #pragma mark - UITextViewDelegate (Required)
 
