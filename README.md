@@ -13,17 +13,21 @@ Additional, I maked UITextView for reply list that just show tag rects from anno
  * Appear tagged user from annotationList(NSArray)
  * Managed annotationList(It able to use write form)
  * Easy customize.
- * 
  
-![MintAnnotationChatView](https://github.com/soleaf/MintAnnotationView/blob/master/sc_chatview.png?raw=true)
+
+![MintAnnotationMemoView](https://raw.githubusercontent.com/soleaf/MintAnnotationView/master/cs_chatview.gif)
+
+![MintAnnotationChatView](https://raw.githubusercontent.com/soleaf/MintAnnotationView/master/sc_chatview.png)
+
 (MintAnnotationChatView)
 
-![MintAnnotationMemoView](https://github.com/soleaf/MintAnnotationView/blob/master/cs_memoview.png?raw=true)
+![MintAnnotationMemoView](https://raw.githubusercontent.com/soleaf/MintAnnotationView/master/cs_memoview.png)
+
 (MintAnnotationChatView)
 
 How to use
 ==
-Clone and show projct. It's very simple.
+Clone or Download and show projct. It's very simple.
 
 MintAnnotationChatView
 ====
@@ -63,6 +67,16 @@ NSMutableDictionary *info = [[NSMutableDictionary alloc] init];
 self.annotationView.annotationList;
 ```
 
+5. Or Get Annoation tagged string.
+
+```objective-c
+[self.annotationView makeStringWithTag];
+```
+result
+```html
+ hello<u id=12>mary</u>!!
+```
+
 MintAnnotationMemoView
 ====
 
@@ -73,5 +87,3 @@ MintAnnotationMemoView
 NSString *firstMemo = @"<u uid=0>Mary</u> hi mary!!. I'm <u uid=1>Cloud</u>.";
 [self.memo annotationWithMemo:firstMemo];
 ```
-
-
