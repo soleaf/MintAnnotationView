@@ -544,7 +544,7 @@ static NSString* const keyModelId = @"mintACV_id";
     NSAttributedString *tail = nil;
     if (cuttingRange.location + cuttingRange.length <= self.attributedText.string.length)
         tail = [self.attributedText attributedSubstringFromRange:NSMakeRange(cuttingRange.location + cuttingRange.length,
-                                                                             self.attributedText.length - 1 - cuttingRange.location - cuttingRange.length)];
+                                                                             self.attributedText.length - cuttingRange.location - cuttingRange.length)];
     
     NSMutableAttributedString *conts = [[NSMutableAttributedString alloc] initWithString:@"" attributes:[self defaultAttributedString]];
     if (head)
