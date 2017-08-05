@@ -8,11 +8,11 @@
 
 #import "CommentListViewController.h"
 
-@interface CommentListViewController ()
+@interface CommentListViewController () <MintAnnotationMemoViewDelegate>
 
 @end
 
-@implementation CommentListViewController
+@implementation CommentListViewController 
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -38,8 +38,11 @@
     NSString *firstMemo = @"<u uid=0>Mary</u> hi mary!!. I'm <u uid=1>Cloud</u>.";
     [self.memo annotationWithMemo:firstMemo];
     
-    // You may need it.
+    // You may should it.
     self.memo.editable = NO;
+    
+    // If you want touch event on tags, Implement MintAnnotationViewDelegate
+    self.memo.delegate = self;
 }
 
 - (void)didReceiveMemoryWarning
@@ -52,4 +55,15 @@
     [self setMemo:nil];
     [super viewDidUnload];
 }
+
+// MintAnnotationView Event
+- (void)touchedMintAnnotationTag:(NSString *)tagNameText
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"value"
+                                                    message:tagNameText
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Cacnel" otherButtonTitles:@"OK", nil];
+    [alert show];
+}
+
 @end
