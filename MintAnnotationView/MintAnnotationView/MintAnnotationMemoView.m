@@ -139,17 +139,23 @@
 
     CGRect titleRect = rect;
     titleRect.origin.y -=1;
-    UILabel *tagLabel = [[UILabel alloc] initWithFrame:titleRect];
-//    UILabel *tagLabel = [[UILabel alloc] initWithFrame:CGRectMake(rect.origin.x+2, rect.origin.y+2, rect.size.width-4, rect.size.height-4)];
-    tagLabel.textColor = _nameTagColor;
-    tagLabel.text = nameText;
-    tagLabel.backgroundColor = [UIColor clearColor];
-    tagLabel.font = [UIFont systemFontOfSize:self.font.pointSize-2];
-    tagLabel.textAlignment = NSTextAlignmentCenter;
-    tagLabel.minimumScaleFactor = 1.;
-    tagLabel.tag = 9;
-    [self addSubview:tagLabel];
+    UIButton *tagButton = [[UIButton alloc] initWithFrame:titleRect];
+    [tagButton setTitleColor:_nameTagColor forState:UIControlStateNormal];
+    [tagButton setTitle:nameText forState:UIControlStateNormal];
+    [tagButton setBackgroundColor:[UIColor clearColor]];
+    tagButton.titleLabel.font = [UIFont systemFontOfSize:self.font.pointSize-2];
+    tagButton.tag = 9;
+    [tagButton addTarget:self action:@selector(touchedTag:) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:tagButton];
     
+}
+
+- (void) touchedTag:(id) sender
+{
+    if (self.delegate != nil){
+        UIButton * tagButton = (UIButton*) sender;
+        [self.delegate touchedMintAnnotationTag:tagButton.titleLabel.text];
+    }
 }
 
 - (NSString *)annotationWithMemo:(NSString *)memo
